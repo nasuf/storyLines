@@ -1,0 +1,12 @@
+spring:
+  data:
+    mongodb:
+      host: 120.25.224.11
+      port: 28888
+      database: storyLines
+  mvc:
+      view:
+        prefix: /html/
+        suffix: .html
+server:
+  port: 9095
