@@ -14,5 +14,8 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	
 	@Query("{$and:[{'storyId':{'$eq': ?0}},{'parentPhaseId':{'$eq': ?1}}]}")
 	List<Phase> findByStoryIdAndParentPhaseId(String storyId, String parentPhaseId);
+	
+	@Query("{'level':{'$eq':?0}}")
+	List<Phase> findByLevel(Integer level);
 
 }

@@ -14,6 +14,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -41,10 +42,17 @@ public class StoryController {
 	@RequestMapping(value = "/story", method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addPhase(@RequestBody Phase phaseObject, 
 			@RequestParam("isNewStory") Boolean isNewStory,
+			@RequestParam(value = "storyTitle", required = false) String storyTitle,
 			@RequestParam(value = "storyId", required = false) String storyId,
 			@RequestParam(value = "parentPhaseId", required = false) String parentPhaseId) {
 		if (isNewStory.equals(true)) {
+			if (StringUtils.isEmpty(storyTitle)) {
+				return new ResponseEntity<Map<String, Object>>(
+						new HttpResult(Constant.RESULT_STATUS_FAILURE, "Story title can't be empty.").build(),
+						HttpStatus.BAD_REQUEST);
+			}
 			Story story = new Story();
+			story.setTitle(storyTitle);
 			story.setDepth(Constant.ONE);
 			story.setPhaseCount(Constant.ONE);
 			story.setCreatedDate(new Date().getTime());
@@ -64,6 +72,7 @@ public class StoryController {
 			phaseObject.setCreatedDate(new Date().getTime());
 			phaseObject.setIsStart(true);
 			phaseObject.setIsEnd(true);
+			phaseObject.setStoryTitle(storyTitle);
 			Phase savedPhase = this.phaseRepository.save(phaseObject);
 			if (null == savedPhase) {
 				return new ResponseEntity<Map<String, Object>>(
@@ -103,6 +112,7 @@ public class StoryController {
 						HttpStatus.BAD_REQUEST);
 			}
 			if (foundParentPhase.getIsEnd().equals(true)) {
+				phaseObject.setLevel(foundParentPhase.getLevel() + Constant.ONE);
 				phaseObject.setIsEnd(true);
 				// update parent phase isEnd to false
 				foundParentPhase.setIsEnd(false);
@@ -115,6 +125,13 @@ public class StoryController {
 			} else {
 				phaseObject.setIsEnd(false);
 			}
+			Story foundStory = this.storyRepository.findOne(storyId);
+			if (null == foundStory) {
+				return new ResponseEntity<Map<String, Object>>(
+						new HttpResult(Constant.RESULT_STATUS_FAILURE, "Can't find story").build(),
+						HttpStatus.BAD_REQUEST);
+			}
+			phaseObject.setStoryTitle(foundStory.getTitle());
 			Phase savedPhase = this.phaseRepository.save(phaseObject);
 			if (null == savedPhase) {
 				return new ResponseEntity<Map<String, Object>>(
@@ -123,12 +140,7 @@ public class StoryController {
 			}
 			logger.debug("Save new phase: [" + savedPhase + "] successfully.");
 			
-			Story foundStory = this.storyRepository.findOne(storyId);
-			if (null == foundStory) {
-				return new ResponseEntity<Map<String, Object>>(
-						new HttpResult(Constant.RESULT_STATUS_FAILURE, "Can't find story").build(),
-						HttpStatus.BAD_REQUEST);
-			}
+			
 			if (savedPhase.getIsEnd().equals(true)) {
 				foundStory.setDepth(foundStory.getDepth() + Constant.ONE);
 			}
@@ -224,6 +236,14 @@ public class StoryController {
 				"Found " + foundPhases.size() + " phases for story id: [" + storyId + "] and parent phase id: [" + parentPhaseId + "]", 
 				data).build(), HttpStatus.OK);
 		
+	}
+	
+	@RequestMapping(value = "/story", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> findStoryList() {
+		List<Phase> levelOnePhases = this.phaseRepository.findByLevel(Constant.ONE);
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+				"Found " + levelOnePhases.size() + " phases for level 1", 
+				levelOnePhases).build(), HttpStatus.OK);
 	}
 	
 }

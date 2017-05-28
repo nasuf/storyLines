@@ -30,6 +30,10 @@ public class Story implements Serializable{
 	private Long createdDate;
 	@Field
 	private Long lastUpdatedDate;
+	@Field
+	private String title;
+	@Field
+	private Boolean isPrivate;
 	
 	public String getId() {
 		return id;
@@ -67,10 +71,23 @@ public class Story implements Serializable{
 	public void setLastUpdatedDate(Long lastUpdatedDate) {
 		this.lastUpdatedDate = lastUpdatedDate;
 	}
+	public String getTitle() {
+		return title;
+	}
+	public void setTitle(String title) {
+		this.title = title;
+	}
+	public Boolean getIsPrivate() {
+		return isPrivate;
+	}
+	public void setIsPrivate(Boolean isPrivate) {
+		this.isPrivate = isPrivate;
+	}
 	@Override
 	public String toString() {
 		return "Story [id=" + id + ", depth=" + depth + ", phaseCount=" + phaseCount + ", phaseIdList=" + phaseIdList
-				+ ", createdDate=" + createdDate + ", lastUpdatedDate=" + lastUpdatedDate + "]";
+				+ ", createdDate=" + createdDate + ", lastUpdatedDate=" + lastUpdatedDate + ", title=" + title
+				+ ", isPrivate=" + isPrivate + "]";
 	}
 
 }

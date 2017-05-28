@@ -1,6 +1,7 @@
 package com.story.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 import javax.validation.constraints.NotNull;
 
@@ -21,6 +22,8 @@ public class Phase implements Serializable{
 	@Field
 	private String storyId;
 	@Field
+	private String storyTitle;
+	@Field
 	private String parentPhaseId;
 	@Field
 	private String content;
@@ -35,9 +38,13 @@ public class Phase implements Serializable{
 	@Field
 	private Integer dislike;
 	@Field
-	private String comment;
+	private ArrayList<String> comments;
 	@Field
 	private Long createdDate;
+	@Field
+	private String author;
+	@Field
+	private Boolean isPrivate;
 	
 	public String getId() {
 		return id;
@@ -87,12 +94,6 @@ public class Phase implements Serializable{
 	public void setDislike(Integer dislike) {
 		this.dislike = dislike;
 	}
-	public String getComment() {
-		return comment;
-	}
-	public void setComment(String comment) {
-		this.comment = comment;
-	}
 	public String getParentPhaseId() {
 		return parentPhaseId;
 	}
@@ -106,11 +107,36 @@ public class Phase implements Serializable{
 	public void setCreatedDate(Long createdDate) {
 		this.createdDate = createdDate;
 	}
+	public String getAuthor() {
+		return author;
+	}
+	public void setAuthor(String author) {
+		this.author = author;
+	}
+	public Boolean getIsPrivate() {
+		return isPrivate;
+	}
+	public void setIsPrivate(Boolean isPrivate) {
+		this.isPrivate = isPrivate;
+	}
+	public ArrayList<String> getComments() {
+		return comments;
+	}
+	public void setComments(ArrayList<String> comments) {
+		this.comments = comments;
+	}
+	public String getStoryTitle() {
+		return storyTitle;
+	}
+	public void setStoryTitle(String storyTitle) {
+		this.storyTitle = storyTitle;
+	}
 	@Override
 	public String toString() {
-		return "Phase [id=" + id + ", storyId=" + storyId + ", parentPhaseId=" + parentPhaseId + ", content=" + content
-				+ ", isStart=" + isStart + ", isEnd=" + isEnd + ", level=" + level + ", like=" + like + ", dislike="
-				+ dislike + ", comment=" + comment + ", createdDate=" + createdDate + "]";
+		return "Phase [id=" + id + ", storyId=" + storyId + ", storyTitle=" + storyTitle + ", parentPhaseId="
+				+ parentPhaseId + ", content=" + content + ", isStart=" + isStart + ", isEnd=" + isEnd + ", level="
+				+ level + ", like=" + like + ", dislike=" + dislike + ", comments=" + comments + ", createdDate="
+				+ createdDate + ", author=" + author + ", isPrivate=" + isPrivate + "]";
 	}
 
 }
