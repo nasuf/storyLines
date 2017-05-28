@@ -4,6 +4,7 @@ package com.story.controller;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -151,7 +152,7 @@ public class StoryController {
 		}
 	}
 	
-	@RequestMapping(value = "/phase/{phaseId}", method = RequestMethod.GET)
+	@RequestMapping(value = "/phase/{phaseId}", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> ratePhase(@PathVariable("phaseId") String phaseId, @RequestParam("like") Boolean like) {
 		if (StringUtils.isEmpty(phaseId)) {
 			return new ResponseEntity<Map<String, Object>>(
@@ -181,6 +182,48 @@ public class StoryController {
 		data.put(Constant.RESULT_PHASE, savedPhase);
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
 				"Phase " + savedPhase.getId() + " updated successfully.", data).build(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/phase/{phaseLevel}", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> findPhases(@PathVariable("phaseLevel") Integer phaseLevel, 
+			@RequestParam("storyId") String storyId) {
+		if (StringUtils.isEmpty(phaseLevel)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Phase level can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		if (StringUtils.isEmpty(storyId)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Story id can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		List<Phase> foundPhases = this.phaseRepository.findByStoryIdAndLevel(storyId, phaseLevel);
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(Constant.RESULT_DATA, foundPhases);
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+				"Found " + foundPhases.size() + " phases for story id: [" + storyId + "] and phase level: [" + phaseLevel + "]", data).build(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/{storyId}/phase/{parentPhaseId}", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> findPhases(@PathVariable("storyId") String storyId, 
+			@PathVariable("parentPhaseId") String parentPhaseId) {
+		if (StringUtils.isEmpty(storyId)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Story id can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		if (StringUtils.isEmpty(parentPhaseId)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Parent phase id can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		List<Phase> foundPhases = this.phaseRepository.findByStoryIdAndParentPhaseId(storyId, parentPhaseId);
+		Map<String, Object> data = new HashMap<String, Object>();
+		data.put(Constant.RESULT_DATA, foundPhases);
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+				"Found " + foundPhases.size() + " phases for story id: [" + storyId + "] and parent phase id: [" + parentPhaseId + "]", 
+				data).build(), HttpStatus.OK);
+		
 	}
 	
 }
