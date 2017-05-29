@@ -5,12 +5,13 @@ import java.util.ArrayList;
 
 import javax.validation.constraints.NotNull;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
-public class Phase implements Serializable{
+public class Phase implements Serializable, Comparable{
 
 	/**
 	 * 
@@ -45,6 +46,8 @@ public class Phase implements Serializable{
 	private String author;
 	@Field
 	private Boolean isPrivate;
+	@Field
+	private ArrayList<String> branchPhases;
 	
 	public String getId() {
 		return id;
@@ -131,12 +134,52 @@ public class Phase implements Serializable{
 	public void setStoryTitle(String storyTitle) {
 		this.storyTitle = storyTitle;
 	}
+	public ArrayList<String> getBranchPhases() {
+		return branchPhases;
+	}
+	public void setBranchPhases(ArrayList<String> branchPhases) {
+		this.branchPhases = branchPhases;
+	}
+	@Override
+	public int hashCode() {
+
+		return StringUtils.isEmpty(this.getId()) ? 0 : this.getId().hashCode();
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Phase clazz = (Phase) obj;
+		return clazz.getId().equals(this.getId());
+	}
+	
 	@Override
 	public String toString() {
 		return "Phase [id=" + id + ", storyId=" + storyId + ", storyTitle=" + storyTitle + ", parentPhaseId="
 				+ parentPhaseId + ", content=" + content + ", isStart=" + isStart + ", isEnd=" + isEnd + ", level="
 				+ level + ", like=" + like + ", dislike=" + dislike + ", comments=" + comments + ", createdDate="
-				+ createdDate + ", author=" + author + ", isPrivate=" + isPrivate + "]";
+				+ createdDate + ", author=" + author + ", isPrivate=" + isPrivate + ", branchPhases=" + branchPhases
+				+ "]";
+	}
+	@Override
+	public int compareTo(Object o) {
+		if (this ==o) {
+            return 0;            
+        } else if (o!=null && o instanceof Phase) {   
+            Phase phase = (Phase) o; 
+            if (like <= phase.like) {
+                return -1;
+            } else {
+	            return 1;
+	        }
+	    } else {
+	        return -1;
+	    }
 	}
 
 }

@@ -6,15 +6,17 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeSet;
 
+import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
-import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -38,7 +40,18 @@ public class StoryController {
 	private PhaseRepository phaseRepository;
 	@Autowired
 	private StoryRepository storyRepository;
+	
+	TreeSet<Phase> phases = new TreeSet<Phase>();
 
+	/**
+	 * create a new story line or a new phase
+	 * @param phaseObject
+	 * @param isNewStory
+	 * @param storyTitle
+	 * @param storyId
+	 * @param parentPhaseId
+	 * @return
+	 */
 	@RequestMapping(value = "/story", method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addPhase(@RequestBody Phase phaseObject, 
 			@RequestParam("isNewStory") Boolean isNewStory,
@@ -139,7 +152,19 @@ public class StoryController {
 						HttpStatus.BAD_REQUEST);
 			}
 			logger.debug("Save new phase: [" + savedPhase + "] successfully.");
-			
+			ArrayList<String> branchPhases = this.phaseRepository.findOne(parentPhaseId).getBranchPhases();
+			if (null == branchPhases) {
+				branchPhases = new ArrayList<String> ();
+			}
+			branchPhases.add(savedPhase.getId());
+			foundParentPhase.setBranchPhases(branchPhases);
+			Phase updatedParentPhase = this.phaseRepository.save(foundParentPhase);
+			if (null == updatedParentPhase) {
+				return new ResponseEntity<Map<String, Object>>(
+						new HttpResult(Constant.RESULT_STATUS_FAILURE, "Parent phase [" + foundParentPhase + "] updated failed.").build(),
+						HttpStatus.BAD_REQUEST);
+			}
+			logger.debug("Update phase into parent phase [" + updatedParentPhase.getId() + "] successfully.");
 			
 			if (savedPhase.getIsEnd().equals(true)) {
 				foundStory.setDepth(foundStory.getDepth() + Constant.ONE);
@@ -164,6 +189,12 @@ public class StoryController {
 		}
 	}
 	
+	/**
+	 * update like or dislike of phase
+	 * @param phaseId
+	 * @param like
+	 * @return
+	 */
 	@RequestMapping(value = "/phase/{phaseId}", method = RequestMethod.PUT)
 	public ResponseEntity<Map<String, Object>> ratePhase(@PathVariable("phaseId") String phaseId, @RequestParam("like") Boolean like) {
 		if (StringUtils.isEmpty(phaseId)) {
@@ -196,6 +227,12 @@ public class StoryController {
 				"Phase " + savedPhase.getId() + " updated successfully.", data).build(), HttpStatus.OK);
 	}
 	
+	/**
+	 * find by phase level and story id.
+	 * @param phaseLevel
+	 * @param storyId
+	 * @return
+	 */
 	@RequestMapping(value = "/phase/{phaseLevel}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findPhases(@PathVariable("phaseLevel") Integer phaseLevel, 
 			@RequestParam("storyId") String storyId) {
@@ -216,6 +253,12 @@ public class StoryController {
 				"Found " + foundPhases.size() + " phases for story id: [" + storyId + "] and phase level: [" + phaseLevel + "]", data).build(), HttpStatus.OK);
 	}
 	
+	/**
+	 * find by story id and parent phase id.
+	 * @param storyId
+	 * @param parentPhaseId
+	 * @return
+	 */
 	@RequestMapping(value = "/{storyId}/phase/{parentPhaseId}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findPhases(@PathVariable("storyId") String storyId, 
 			@PathVariable("parentPhaseId") String parentPhaseId) {
@@ -238,6 +281,10 @@ public class StoryController {
 		
 	}
 	
+	/**
+	 * find story list ( the level 1 phase list )
+	 * @return
+	 */
 	@RequestMapping(value = "/story", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findStoryList() {
 		List<Phase> levelOnePhases = this.phaseRepository.findByLevel(Constant.ONE);
@@ -245,5 +292,37 @@ public class StoryController {
 				"Found " + levelOnePhases.size() + " phases for level 1", 
 				levelOnePhases).build(), HttpStatus.OK);
 	}
+	
+	/**
+	 * traverse find the phase by parent phase id
+	 * @param parentPhaseId
+	 * @return
+	 */
+	@RequestMapping(value = "/story/phases/{parentPhaseId}", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> findStoryLineByPhaseId(@PathVariable("parentPhaseId") String parentPhaseId) {
+		if (StringUtils.isEmpty(parentPhaseId)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Head phase id can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		phases.clear();
+		TreeSet<Phase> ChildPhase = this.findChildPhases(parentPhaseId);
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+				"Found " + ChildPhase.size() + " phases for parentPhaseId [" + parentPhaseId + "]", 
+				ChildPhase).build(), HttpStatus.OK);
+	}
+	
+	public TreeSet<Phase> findChildPhases(String parentPhaseId){
+		List<Phase> foundPhases = this.phaseRepository.findByParentPhaseId(parentPhaseId, new Sort(Sort.Direction.DESC, "like"));
+		if(!foundPhases.isEmpty()) {
+			this.phases.add(foundPhases.get(0));
+			List<Phase> childPhases = this.phaseRepository.findByParentPhaseId(foundPhases.get(0).getId(), new Sort(Sort.Direction.DESC, "like"));
+			if (!childPhases.isEmpty()) {
+				findChildPhases(childPhases.get(0).getParentPhaseId());
+			}
+		}
+		return phases;
+	}
+	
 	
 }

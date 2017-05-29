@@ -2,6 +2,7 @@ package com.story.repository;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -17,5 +18,8 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	
 	@Query("{'level':{'$eq':?0}}")
 	List<Phase> findByLevel(Integer level);
+	
+	@Query("{'parentPhaseId':{'$eq':?0}}")
+	List<Phase> findByParentPhaseId(String parentPhaseId, Sort sort);
 
 }
