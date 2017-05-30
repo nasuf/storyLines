@@ -55,17 +55,11 @@ public class StoryController {
 	@RequestMapping(value = "/story", method = RequestMethod.POST)
 	public ResponseEntity<Map<String, Object>> addPhase(@RequestBody Phase phaseObject, 
 			@RequestParam("isNewStory") Boolean isNewStory,
-			@RequestParam(value = "storyTitle", required = false) String storyTitle,
 			@RequestParam(value = "storyId", required = false) String storyId,
 			@RequestParam(value = "parentPhaseId", required = false) String parentPhaseId) {
 		if (isNewStory.equals(true)) {
-			if (StringUtils.isEmpty(storyTitle)) {
-				return new ResponseEntity<Map<String, Object>>(
-						new HttpResult(Constant.RESULT_STATUS_FAILURE, "Story title can't be empty.").build(),
-						HttpStatus.BAD_REQUEST);
-			}
 			Story story = new Story();
-			story.setTitle(storyTitle);
+			story.setTitle(phaseObject.getStoryTitle());
 			story.setDepth(Constant.ONE);
 			story.setPhaseCount(Constant.ONE);
 			story.setCreatedDate(new Date().getTime());
@@ -85,7 +79,6 @@ public class StoryController {
 			phaseObject.setCreatedDate(new Date().getTime());
 			phaseObject.setIsStart(true);
 			phaseObject.setIsEnd(true);
-			phaseObject.setStoryTitle(storyTitle);
 			Phase savedPhase = this.phaseRepository.save(phaseObject);
 			if (null == savedPhase) {
 				return new ResponseEntity<Map<String, Object>>(

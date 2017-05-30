@@ -4,19 +4,17 @@ var routes = [
 		components: {
 			content: storyListTab
 		}
+	},
+	{
+		path: '/newStoryTab',
+		components: {
+			content: newStoryTab
+		}
 	}
 ];
 
 var routeBeforeEach = function(to, from, next,b,d) {
-	if(to.path != "/"){
-		if(isEmptySession()){
-			next("/");
-		} else {
-			next();
-		}
-	} else {
-		next();
-	}
+	next();
 };
 
 routes.forEach(function(route){
@@ -41,5 +39,14 @@ var app = new Vue({
 	
 	data: function() {
 		return {}
+	},
+	
+	methods: {
+		routeTo: function(tabName, query) {
+			router.push(tabName, query)
+		},
+		routeBack: function(){
+			router.back();
+		}
 	}
 })
