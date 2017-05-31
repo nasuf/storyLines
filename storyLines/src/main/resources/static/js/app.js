@@ -10,6 +10,12 @@ var routes = [
 		components: {
 			content: newStoryTab
 		}
+	},
+	{
+		path: '/storyLine',
+		components: {
+			content: storyLineTab
+		}
 	}
 ];
 
