@@ -16,6 +16,12 @@ var routes = [
 		components: {
 			content: storyLineTab
 		}
+	},
+	{
+		path: '/newPhaseTab',
+		components: {
+			content: newPhaseTab
+		}
 	}
 ];
 

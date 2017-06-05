@@ -46,6 +46,7 @@ var storyLineTab = Vue.component('story-line', {
 			debugger;
 			if (response.data.status == 'success') {
 				_self.phases = response.data.data;
+				_self.phases.splice(0,0,_self.$route.query.parentPhase)
 			}
 		})
 	}

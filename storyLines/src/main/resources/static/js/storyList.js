@@ -12,7 +12,7 @@ var storyListTab = Vue.component('story-list', {
 						</div> \
 					</div> \
 					<div class="ui raised link centered card" v-for="phase in phases"> \
-						  <div class="content" @click="loadStoryLine(phase.id, phase.branchPhases, phase.isStart)"> \
+						  <div class="content" @click="loadStoryLine(phase.id, phase.branchPhases, phase.isStart, phase)"> \
 							<span class="right floated"><font color="grey" size="2px">{{phase.isStart ? "" : phase.author + " · " }}{{formatDate(phase.createdDate)}}</font></span> \
 						    <div class="header" v-if="phase.isStart">{{phase.storyTitle}}<span><font color="grey" size="2px">    / {{phase.author}}</font></span></div> \
 						    <div class="description"> \
@@ -38,7 +38,7 @@ var storyListTab = Vue.component('story-list', {
 					        <i class="remove icon"></i> \
 					        No \
 					      </div> \
-					      <div class="ui ok green basic inverted button"> \
+					      <div class="ui ok green basic inverted button" @click="routeTo(\'newPhaseTab\', selectedPhase)"> \
 					        <i class="checkmark icon"></i> \
 					        Yes \
 					      </div> \
@@ -50,7 +50,8 @@ var storyListTab = Vue.component('story-list', {
 	
 	data: function() {
 		return {
-			phases: []
+			phases: [],
+			selectedPhase: ''
 		}
 	},
 	
@@ -67,19 +68,22 @@ var storyListTab = Vue.component('story-list', {
 			return year + "-" + month + "-" + day;
 		},
 		
-		loadStoryLine: function(parentPhaseId, branchPhases, isStart) {
+		loadStoryLine: function(parentPhaseId, branchPhases, isStart, parentPhase) {
 			if (branchPhases && isStart) {
 				debugger;
-				this.$parent.routeTo({path: "/storyLine", query: {parentPhaseId: parentPhaseId}})
+				this.$parent.routeTo({path: "/storyLine", query: {parentPhaseId: parentPhaseId, parentPhase: parentPhase}})
 			} else {
+				this.selectedPhase = parentPhase;
 				$('#createNew')
 				  .modal('show')
 				;
 			}
 		},
 		
-		routeTo: function(tabName) {
-			router.push(tabName)
+		routeTo: function(tabName, parentPhase) {
+			//router.push(tabName)
+			debugger;
+			this.$parent.routeTo({path: tabName, query: {parentPhase: parentPhase}})
 		}
 	},
 	
