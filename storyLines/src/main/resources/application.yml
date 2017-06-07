@@ -9,4 +9,4 @@ spring:
         prefix: /html/
         suffix: .html
 server:
-  port: 9095
+  port: 19095
