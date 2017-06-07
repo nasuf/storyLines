@@ -18,13 +18,35 @@ var storyLineTab = Vue.component('story-line', {
 							{{processContent(branchPhase.content)}} \
 					  </a> \
 					</div> \
+					<div id="createNew" class="ui basic modal"> \
+					  <div class="header"> \
+						要重写此节并开启新的故事线吗？ \
+					  </div> \
+					  <div class="image content"> \
+					    <div class="description"> \
+					    </div> \
+					  </div> \
+					  <div class="actions"> \
+					    <div class="two fluid ui inverted buttons"> \
+					      <div class="ui cancel red basic inverted button"> \
+					        <i class="remove icon"></i> \
+					        No \
+					      </div> \
+					      <div class="ui ok green basic inverted button" @click="routeTo(\'newPhaseTab\')"> \
+					        <i class="checkmark icon"></i> \
+					        Yes \
+					      </div> \
+					    </div> \
+					  </div> \
+					</div> \
 				</div>',
 	
 	data: function() {
 		return {
 			phases: [],
 			branchPhases: [],
-			selectedPhaseIndex: ''
+			selectedPhaseIndex: '',
+			selectedPhase: ''
 		}
 	},
 	
@@ -59,6 +81,10 @@ var storyLineTab = Vue.component('story-line', {
 					}
 				}) 
 				
+			} else {
+				this.selectedPhase = phase;
+				$('#createNew')
+				  .modal('show');
 			}
 		},
 		
@@ -93,6 +119,12 @@ var storyLineTab = Vue.component('story-line', {
 		toggleSideBar: function() {
 			$('.ui.labeled.icon.sidebar')
 			  .sidebar('toggle');
+		},
+		
+		routeTo: function(tabName) {
+			//router.push(tabName)
+			debugger;
+			this.$parent.routeTo({path: tabName, query: {parentPhase: this.selectedPhase}})
 		}
 		
 	},
