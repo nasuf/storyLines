@@ -2,13 +2,14 @@ package com.story.controller;
 
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeSet;
 
-import org.bson.types.ObjectId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ import com.story.repository.PhaseRepository;
 import com.story.repository.StoryRepository;
 import com.story.utils.Constant;
 import com.story.utils.HttpResult;
+import com.story.utils.PhaseComparator;
 
 @RequestMapping("/story")
 @Controller
@@ -41,7 +43,7 @@ public class StoryController {
 	@Autowired
 	private StoryRepository storyRepository;
 	
-	TreeSet<Phase> phases = new TreeSet<Phase>();
+	ArrayList<Phase> phases = new ArrayList<Phase>();
 
 	/**
 	 * create a new story line or a new phase
@@ -299,13 +301,13 @@ public class StoryController {
 					HttpStatus.BAD_REQUEST);
 		}
 		phases.clear();
-		TreeSet<Phase> ChildPhase = this.findChildPhases(parentPhaseId);
+		ArrayList<Phase> ChildPhase = this.findChildPhases(parentPhaseId);
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
 				"Found " + ChildPhase.size() + " phases for parentPhaseId [" + parentPhaseId + "]", 
 				ChildPhase).build(), HttpStatus.OK);
 	}
 	
-	public TreeSet<Phase> findChildPhases(String parentPhaseId){
+	public ArrayList<Phase> findChildPhases(String parentPhaseId){
 		List<Phase> foundPhases = this.phaseRepository.findByParentPhaseId(parentPhaseId, new Sort(Sort.Direction.DESC, "like"));
 		if(!foundPhases.isEmpty()) {
 			this.phases.add(foundPhases.get(0));
@@ -314,7 +316,28 @@ public class StoryController {
 				findChildPhases(childPhases.get(0).getParentPhaseId());
 			}
 		}
+		Collections.sort(phases, new PhaseComparator());
 		return phases;
+	}
+	
+	@RequestMapping(value = "/phases", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> findPhaseById(@RequestParam("phaseIds") String phaseIds) {
+		if (StringUtils.isEmpty(phaseIds)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Phase id can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		HashSet<Phase> phases = new HashSet<Phase> ();
+		String[] ids = phaseIds.split(Constant.PUNCTUATION_COMMA);
+		for (String phaseId : ids) {
+			Phase foundPhase = this.phaseRepository.findOne(phaseId);
+			if (null != foundPhase) {
+				phases.add(foundPhase);
+			}
+		}
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+				"Found " + phases.size() + " phases.", 
+				phases).build(), HttpStatus.OK);
 	}
 	
 	

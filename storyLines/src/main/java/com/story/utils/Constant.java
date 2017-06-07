@@ -13,5 +13,8 @@ public class Constant {
 	public static final String RESULT_DATA = "data";
 	public static final String RESULT_STORY = "story";
 	public static final String RESULT_PHASE = "phase";
+	
+	//Punctuation
+	public static final String PUNCTUATION_COMMA = ",";
 
 }
