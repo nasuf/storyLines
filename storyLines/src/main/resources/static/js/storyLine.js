@@ -24,7 +24,7 @@ var storyLineTab = Vue.component('story-line', {
 		return {
 			phases: [],
 			branchPhases: [],
-			clickedPhaseIndex: ''
+			selectedPhaseIndex: ''
 		}
 	},
 	
@@ -55,7 +55,7 @@ var storyLineTab = Vue.component('story-line', {
 						debugger;
 						_self.branchPhases = response.data.data;
 						_self.toggleSideBar();
-						_self.clickedPhaseIndex = index;
+						_self.selectedPhaseIndex = index;
 					}
 				}) 
 				
@@ -79,7 +79,8 @@ var storyLineTab = Vue.component('story-line', {
 				debugger;
 				if (response.data.status == 'success') {
 					var subPhases = response.data.data;
-					var originPhases = _self.phases.splice(0, _self.clickedPhaseIndex + 1);
+					var originPhases = _self.phases.splice(0, _self.selectedPhaseIndex + 1);
+					originPhases.push(branchPhase);
 					for (var i in subPhases) {
 						originPhases.push(subPhases[i]);
 					}
