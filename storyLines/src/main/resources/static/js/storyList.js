@@ -74,7 +74,7 @@ var storyListTab = Vue.component('story-list', {
 				this.$store.commit('updateTopPhase', topPhase);
 				this.$parent.routeTo("/storyLine");
 			} else {
-				this.selectedPhase = parentPhase;
+				this.selectedPhase = topPhase;
 				$('#createNew')
 				  .modal('show')
 				;
