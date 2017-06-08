@@ -282,10 +282,10 @@ public class StoryController {
 	 */
 	@RequestMapping(value = "/story", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findStoryList() {
-		List<Phase> levelOnePhases = this.phaseRepository.findByLevel(Constant.ONE);
+		List<Phase> topPhases = this.phaseRepository.findByParentPhaseId(null);
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
-				"Found " + levelOnePhases.size() + " phases for level 1", 
-				levelOnePhases).build(), HttpStatus.OK);
+				"Found " + topPhases.size() + " phases for level 1", 
+				topPhases).build(), HttpStatus.OK);
 	}
 	
 	/**

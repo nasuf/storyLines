@@ -43,9 +43,26 @@ var router = new VueRouter({
 	beforeEach: routeBeforeEach
 });
 
+var store = new Vuex.Store({
+	state: {
+		parentPhase: '',
+		topPhase: ''
+	},
+	mutations: {
+		updateParentPhase (state, parentPhase) {
+			state.parentPhase = parentPhase;
+		},
+		updateTopPhase (state, topPhase) {
+			state.topPhase = topPhase;
+		}
+	}
+});
+
 var app = new Vue({
 	
 	router: router,
+	
+	store,
 	
 	el: "#app",
 	

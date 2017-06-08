@@ -128,12 +128,14 @@ var newStoryTab = Vue.component('new-story',{
 			axios.post(url, this.phase).then(function(response){
 				debugger;
 				if (response.data.status = "success") {
-					router.push("/");
+					//router.push("/");
+					_self.$parent.routeTo("/");
 				}
 			})
 		},
 		routeTo: function(tabName) {
-			router.push(tabName)
+			//router.push(tabName)
+			this.$parent.routeTo(tabName);
 		}
 	}
 	

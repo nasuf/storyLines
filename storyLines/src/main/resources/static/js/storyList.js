@@ -68,10 +68,11 @@ var storyListTab = Vue.component('story-list', {
 			return year + "-" + month + "-" + day;
 		},
 		
-		loadStoryLine: function(parentPhaseId, branchPhases, isStart, parentPhase) {
+		loadStoryLine: function(parentPhaseId, branchPhases, isStart, topPhase) {
 			if (branchPhases && isStart) {
 				debugger;
-				this.$parent.routeTo({path: "/storyLine", query: {parentPhaseId: parentPhaseId, parentPhase: parentPhase}})
+				this.$store.commit('updateTopPhase', topPhase);
+				this.$parent.routeTo("/storyLine");
 			} else {
 				this.selectedPhase = parentPhase;
 				$('#createNew')
@@ -83,7 +84,7 @@ var storyListTab = Vue.component('story-list', {
 		routeTo: function(tabName, parentPhase) {
 			//router.push(tabName)
 			debugger;
-			this.$parent.routeTo({path: tabName, query: {parentPhase: parentPhase}})
+			this.$parent.routeTo(tabName)
 		}
 	},
 	

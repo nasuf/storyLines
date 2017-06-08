@@ -17,6 +17,9 @@ var storyLineTab = Vue.component('story-line', {
 					  <a class="item" v-for="branchPhase in branchPhases" style="text-align: left" @click="loadBranchLine(branchPhase)"> \
 							{{processContent(branchPhase.content)}} \
 					  </a> \
+					  <a class="item" @click="routeToNewPhaseTab()"> \
+					    	<i class="block add circle icon"></i> \
+					  </a> \
 					</div> \
 					<div id="createNew" class="ui basic modal"> \
 					  <div class="header"> \
@@ -66,6 +69,7 @@ var storyLineTab = Vue.component('story-line', {
 		checkBranches: function(phase, index) {
 			debugger;
 			if (phase.branchPhases && phase.branchPhases.length > 1) {
+				this.selectedPhase = phase;
 				var url = "/story/phases";
 				var _self = this;
 				axios.get(url, {
@@ -121,23 +125,31 @@ var storyLineTab = Vue.component('story-line', {
 			  .sidebar('toggle');
 		},
 		
+		routeToNewPhaseTab() {
+			this.toggleSideBar();
+			$('#createNew')
+			  .modal('show');
+		},
+		
 		routeTo: function(tabName) {
 			//router.push(tabName)
 			debugger;
-			this.$parent.routeTo({path: tabName, query: {parentPhase: this.selectedPhase}})
+			this.$store.commit('updateParentPhase', this.selectedPhase);
+			this.$parent.routeTo(tabName)
 		}
 		
 	},
 	
 	beforeCreate: function() {
 		debugger;
-		var url = "/story/story/phases/" + this.$route.query.parentPhaseId;
+		var url = "/story/story/phases/" + this.$store.state.topPhase.id;//this.$route.query.parentPhaseId;
 		var _self = this;
 		axios.get(url).then(function(response) {
 			debugger;
 			if (response.data.status == 'success') {
 				_self.phases = response.data.data;
-				_self.phases.splice(0,0,_self.$route.query.parentPhase)
+				//_self.phases.splice(0,0,_self.$route.query.parentPhase)
+				_self.phases.splice(0,0,_self.$store.state.topPhase)
 			}
 		})
 	}

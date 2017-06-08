@@ -109,7 +109,8 @@ var newPhaseTab = Vue.component('new-phase',{
 		},
 		createPhase: function() {
 			debugger;
-			var parentPhase = this.$route.query.parentPhase;
+			//var parentPhase = this.$route.query.parentPhase;
+			var parentPhase = this.$store.state.parentPhase;
 			var url = "/story/story?isNewStory=false&storyId=" + parentPhase.storyId + 
 				"&parentPhaseId=" + parentPhase.id + "&isNewStory=false";
 			this.phase.level = parentPhase.level + 1;
@@ -117,12 +118,14 @@ var newPhaseTab = Vue.component('new-phase',{
 			axios.post(url, this.phase).then(function(response){
 				debugger;
 				if (response.data.status = "success") {
-					router.push("/");
+					//router.push("/");
+					_self.$parent.routeBack();
 				}
 			})
 		},
 		routeTo: function(tabName) {
-			router.push(tabName)
+			//router.push(tabName)
+			this.$parent.routeTo(tabName)
 		}
 	}
 	

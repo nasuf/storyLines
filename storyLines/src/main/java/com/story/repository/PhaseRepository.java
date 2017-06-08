@@ -21,5 +21,8 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	
 	@Query("{'parentPhaseId':{'$eq':?0}}")
 	List<Phase> findByParentPhaseId(String parentPhaseId, Sort sort);
+	
+	@Query("{'parentPhaseId':{'$eq':?0}}")
+	List<Phase> findByParentPhaseId(String parentPhaseId);
 
 }
