@@ -301,6 +301,8 @@ public class StoryController {
 					HttpStatus.BAD_REQUEST);
 		}
 		phases.clear();
+		Phase foundParentPhase = this.phaseRepository.findOne(parentPhaseId);
+		phases.add(foundParentPhase);
 		ArrayList<Phase> ChildPhase = this.findChildPhases(parentPhaseId);
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
 				"Found " + ChildPhase.size() + " phases for parentPhaseId [" + parentPhaseId + "]", 

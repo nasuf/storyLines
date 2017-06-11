@@ -24,7 +24,7 @@ var storyListTab = Vue.component('story-list', {
 						    <span class="right floated star"><i class="write icon"></i> Follow </span> \
 						  </div> \
 					</div> \
-					<div id="createNew" class="ui basic modal"> \
+					<div id="extendNew" class="ui basic modal"> \
 					  <div class="header"> \
 						该故事线尚未开启，您愿意续写吗？ \
 					  </div> \
@@ -75,7 +75,7 @@ var storyListTab = Vue.component('story-list', {
 				this.$parent.routeTo("/storyLine");
 			} else {
 				this.selectedPhase = topPhase;
-				$('#createNew')
+				$('#extendNew')
 				  .modal('show')
 				;
 			}
@@ -84,6 +84,7 @@ var storyListTab = Vue.component('story-list', {
 		routeTo: function(tabName, parentPhase) {
 			//router.push(tabName)
 			debugger;
+			this.$store.commit('updateParentPhase', parentPhase);
 			this.$parent.routeTo(tabName)
 		}
 	},

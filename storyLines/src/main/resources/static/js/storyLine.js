@@ -1,8 +1,9 @@
 var storyLineTab = Vue.component('story-line', {
 	
-	template: ' <div> \
+	template: ' <div id="storyLine"> \
 					<div style="margin-top:20px; margin-bottom:20px" class="ui list"> \
 						<div class="ui container"> \
+							<h2 class="ui header" v-if="phases">{{topPhase.storyTitle}}&nbsp;&nbsp;<font color="grey" size="2px">{{ topPhase.author }}</font></h2> \
 							<div class="ui piled segment" v-for="(phase, index) in phases" style="margin-top:5px; margin-bottom:15px" @click="checkBranches(phase, index)"> \
 								<p>{{ phase.content }}</p> \
 								<h> \
@@ -13,7 +14,7 @@ var storyLineTab = Vue.component('story-line', {
 							</div> \
 						</div> \
 					</div> \
-					<div class="ui right demo vertical inverted sidebar labeled icon menu"> \
+					<div id="sidebar" data-transition="slide out" class="ui right demo vertical inverted sidebar labeled icon menu"> \
 					  <a class="item" v-for="branchPhase in branchPhases" style="text-align: left" @click="loadBranchLine(branchPhase)"> \
 							{{processContent(branchPhase.content)}} \
 					  </a> \
@@ -23,7 +24,7 @@ var storyLineTab = Vue.component('story-line', {
 					</div> \
 					<div id="createNew" class="ui basic modal"> \
 					  <div class="header"> \
-						要重写此节并开启新的故事线吗？ \
+						要由此节开始续写故事线吗？ \
 					  </div> \
 					  <div class="image content"> \
 					    <div class="description"> \
@@ -46,10 +47,11 @@ var storyLineTab = Vue.component('story-line', {
 	
 	data: function() {
 		return {
-			phases: [],
+			phases: new Array(),
 			branchPhases: [],
 			selectedPhaseIndex: '',
-			selectedPhase: ''
+			selectedPhase: '',
+			topPhase: ''
 		}
 	},
 	
@@ -93,7 +95,6 @@ var storyLineTab = Vue.component('story-line', {
 		},
 		
 		processContent: function(content) {
-			debugger;
 			if (content && content.length > 20) {
 				return content.substr(0, 15) + '...';
 			} else {
@@ -108,9 +109,9 @@ var storyLineTab = Vue.component('story-line', {
 			axios.get(url).then(function(response) {
 				debugger;
 				if (response.data.status == 'success') {
+					debugger;
 					var subPhases = response.data.data;
 					var originPhases = _self.phases.splice(0, _self.selectedPhaseIndex + 1);
-					originPhases.push(branchPhase);
 					for (var i in subPhases) {
 						originPhases.push(subPhases[i]);
 					}
@@ -121,8 +122,9 @@ var storyLineTab = Vue.component('story-line', {
 		},
 		
 		toggleSideBar: function() {
-			$('.ui.labeled.icon.sidebar')
-			  .sidebar('toggle');
+			$('#sidebar')
+			  .sidebar('toggle')
+			  .transition('slide-out');
 		},
 		
 		routeToNewPhaseTab() {
@@ -140,16 +142,24 @@ var storyLineTab = Vue.component('story-line', {
 		
 	},
 	
+	created: function() {
+		this.topPhase = this.$store.state.topPhase;
+	},
+	
 	beforeCreate: function() {
+		debugger;
+		var sidebar = document.getElementById("sidebar");
+		if (sidebar) {
+			document.getElementsByTagName('body')[0].removeChild(sidebar);
+		}
 		debugger;
 		var url = "/story/story/phases/" + this.$store.state.topPhase.id;//this.$route.query.parentPhaseId;
 		var _self = this;
+		this.branchPhases = [];
 		axios.get(url).then(function(response) {
 			debugger;
 			if (response.data.status == 'success') {
 				_self.phases = response.data.data;
-				//_self.phases.splice(0,0,_self.$route.query.parentPhase)
-				_self.phases.splice(0,0,_self.$store.state.topPhase)
 			}
 		})
 	}

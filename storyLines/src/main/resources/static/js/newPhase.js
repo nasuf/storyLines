@@ -118,13 +118,11 @@ var newPhaseTab = Vue.component('new-phase',{
 			axios.post(url, this.phase).then(function(response){
 				debugger;
 				if (response.data.status = "success") {
-					//router.push("/");
 					_self.$parent.routeBack();
 				}
 			})
 		},
 		routeTo: function(tabName) {
-			//router.push(tabName)
 			this.$parent.routeTo(tabName)
 		}
 	}
