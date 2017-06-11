@@ -125,6 +125,12 @@ var newPhaseTab = Vue.component('new-phase',{
 		routeTo: function(tabName) {
 			this.$parent.routeTo(tabName)
 		}
+	},
+	
+	beforeCreate: function() {
+		if (!this.$store.state.parentPhase) {
+			this.$parent.routeTo('/');
+		}
 	}
 	
 })

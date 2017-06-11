@@ -25,22 +25,8 @@ var routes = [
 	}
 ];
 
-var routeBeforeEach = function(to, from, next,b,d) {
-	next();
-};
-
-routes.forEach(function(route){
-	route.beforeEnter = routeBeforeEach;
-	if(route.children){
-		route.children.forEach(function(children){
-			children.beforeEnter = routeBeforeEach;
-		});
-	}
-});
-
 var router = new VueRouter({
-	routes: routes,
-	beforeEach: routeBeforeEach
+	routes: routes
 });
 
 var store = new Vuex.Store({

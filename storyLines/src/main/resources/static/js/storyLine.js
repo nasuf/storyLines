@@ -123,8 +123,7 @@ var storyLineTab = Vue.component('story-line', {
 		
 		toggleSideBar: function() {
 			$('#sidebar')
-			  .sidebar('toggle')
-			  .transition('slide-out');
+			  .sidebar('toggle');
 		},
 		
 		routeToNewPhaseTab() {
@@ -147,6 +146,9 @@ var storyLineTab = Vue.component('story-line', {
 	},
 	
 	beforeCreate: function() {
+		if (!this.$store.state.topPhase) {
+			this.$parent.routeTo('/');
+		}
 		debugger;
 		var sidebar = document.getElementById("sidebar");
 		if (sidebar) {
