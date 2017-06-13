@@ -5,7 +5,7 @@ var storyLineTab = Vue.component('story-line', {
 						<div class="ui container"> \
 							<h2 class="ui header" v-if="phases">{{topPhase.storyTitle}}&nbsp;&nbsp;<font color="grey" size="2px">{{ topPhase.author }}</font></h2> \
 							<div class="ui piled segment" v-for="(phase, index) in phases" style="margin-top:5px; margin-bottom:15px"> \
-								<p @click="checkBranches(phase, index)">{{ phase.content }}</p> \
+								<pre style="overFlow-x: hidden; white-space: pre-wrap;word-wrap: break-word;" @click="checkBranches(phase, index)">{{ phase.content }}</pre> \
 								<h> \
 									<font color="grey">{{ formatDate(phase.createdDate) }}&nbsp;&nbsp;·&nbsp;&nbsp;{{phase.author}}</font>&nbsp;&nbsp;&nbsp;&nbsp; \
 									<span class="left floated like"><font color="grey"><i class="like icon"></i> {{phase.like ? phase.like : \"\"}} Likes </font></span>&nbsp;&nbsp; \
