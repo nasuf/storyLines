@@ -16,7 +16,7 @@ var storyListTab = Vue.component('story-list', {
 							<span class="right floated"><font color="grey" size="2px">{{phase.isStart ? "" : phase.author + " · " }}{{formatDate(phase.createdDate)}}</font></span> \
 						    <div class="header" v-if="phase.isStart">{{phase.storyTitle}}<span><font color="grey" size="2px">    / {{phase.author}}</font></span></div> \
 						    <div class="description"> \
-						      <p>{{phase.content}}</p> \
+						      <pre style="overFlow-x: hidden; white-space: pre-wrap;word-wrap: break-word;">{{phase.content}}</pre> \
 						    </div> \
 						  </div> \
 						  <div class="extra content"> \
