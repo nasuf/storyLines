@@ -9,7 +9,7 @@ var storyLineTab = Vue.component('story-line', {
 								<h> \
 									<font color="grey">{{ formatDate(phase.createdDate) }}&nbsp;&nbsp;·&nbsp;&nbsp;{{phase.author}}</font>&nbsp;&nbsp;&nbsp;&nbsp; \
 									<span class="left floated like"><font color="grey"><i :id="index" class="empty heart icon" @click="toggleLikesIcon(phase.id, index)"></i> {{phase.like ? phase.like : \"\"}} Likes </font></span>&nbsp;&nbsp; \
-									<span class="right floated star"><font color="grey"><i class="comments icon"></i> Comment </font></span>&nbsp;&nbsp; \
+									<!--<span class="right floated star"><font color="grey"><i class="comments icon"></i> Comment </font></span>&nbsp;&nbsp;--> \
 									<span class="right floated star" v-if="phase.branchPhases && phase.branchPhases.length > 1"><font color="grey"><i class="sitemap icon"></i> </font></span> \
 								</h> \
 							</div> \
