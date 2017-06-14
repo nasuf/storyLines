@@ -190,8 +190,8 @@ public class StoryController {
 	 * @param like
 	 * @return
 	 */
-	@RequestMapping(value = "/phase/{phaseId}", method = RequestMethod.PUT)
-	public ResponseEntity<Map<String, Object>> ratePhase(@PathVariable("phaseId") String phaseId, @RequestParam("like") Boolean like) {
+	@RequestMapping(value = "/phase/{phaseId}/{like}", method = RequestMethod.PUT)
+	public ResponseEntity<Map<String, Object>> ratePhase(@PathVariable("phaseId") String phaseId, @PathVariable("like") Boolean like) {
 		if (StringUtils.isEmpty(phaseId)) {
 			return new ResponseEntity<Map<String, Object>>(
 					new HttpResult(Constant.RESULT_STATUS_FAILURE, "phaseId can't be null").build(),
@@ -207,7 +207,9 @@ public class StoryController {
 		if (like.equals(true)) {
 			foundPhase.setLike(foundPhase.getLike() + Constant.ONE);
 		} else {
-			foundPhase.setDislike(foundPhase.getDislike() + Constant.ONE);
+			if (!foundPhase.getLike().equals(0)) {
+				foundPhase.setLike(foundPhase.getLike()-1);
+			}
 		}
 		Phase savedPhase = this.phaseRepository.save(foundPhase);
 		if (null == savedPhase) {
@@ -282,7 +284,7 @@ public class StoryController {
 	 */
 	@RequestMapping(value = "/story", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findStoryList() {
-		List<Phase> topPhases = this.phaseRepository.findByParentPhaseId(null);
+		List<Phase> topPhases = this.phaseRepository.findByParentPhaseId(null, new Sort(Sort.Direction.DESC, "createdDate"));
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
 				"Found " + topPhases.size() + " phases for level 1", 
 				topPhases).build(), HttpStatus.OK);

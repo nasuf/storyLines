@@ -8,8 +8,8 @@ var storyLineTab = Vue.component('story-line', {
 								<pre style="overFlow-x: hidden; white-space: pre-wrap;word-wrap: break-word;" @click="checkBranches(phase, index)">{{ phase.content }}</pre> \
 								<h> \
 									<font color="grey">{{ formatDate(phase.createdDate) }}&nbsp;&nbsp;·&nbsp;&nbsp;{{phase.author}}</font>&nbsp;&nbsp;&nbsp;&nbsp; \
-									<span class="left floated like"><font color="grey"><i class="like icon"></i> {{phase.like ? phase.like : \"\"}} Likes </font></span>&nbsp;&nbsp; \
-									<span class="right floated star"><font color="grey"><i class="write icon"></i> Update </font></span>&nbsp;&nbsp; \
+									<span class="left floated like"><font color="grey"><i :id="index" class="empty heart icon" @click="toggleLikesIcon(phase.id, index)"></i> {{phase.like ? phase.like : \"\"}} Likes </font></span>&nbsp;&nbsp; \
+									<span class="right floated star"><font color="grey"><i class="comments icon"></i> Comment </font></span>&nbsp;&nbsp; \
 									<span class="right floated star" v-if="phase.branchPhases && phase.branchPhases.length > 1"><font color="grey"><i class="sitemap icon"></i> </font></span> \
 								</h> \
 							</div> \
@@ -57,6 +57,26 @@ var storyLineTab = Vue.component('story-line', {
 	},
 	
 	methods: {
+		
+		toggleLikesIcon: function(phaseId, index) {
+			debugger;
+			var like = true;
+			var attr = $('#'+index).attr('class');
+			if (attr == 'empty heart icon') {
+				// like
+				$('#'+index).attr('class','heart icon');
+				this.phases[index].like ++;
+			} else {
+				// dislike
+				$('#'+index).attr('class','empty heart icon');
+				like = false;
+				if (this.phases[index].like != 0) {
+					this.phases[index].like -- ;
+				}
+			}
+			var url = "/story/phase/" + phaseId + "/" + like;
+			axios.put(url);
+		},
 		
 		formatDate: function(value) {
 			var date = new Date();

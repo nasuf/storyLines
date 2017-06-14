@@ -2,7 +2,7 @@ var storyListTab = Vue.component('story-list', {
 	
 	template: ' <div style="margin-top:20px; margin-bottom:20px" class="ui list"> \
 				<div class="ui container"> \
-					<div class="ui top attached tabular menu transparent"> \
+					<!--<div class="ui top attached tabular menu transparent"> \
 						<div class="right menu"> \
 							 <div class="item"> \
 							    <div class="ui transparent icon input"> \
@@ -10,8 +10,13 @@ var storyListTab = Vue.component('story-list', {
 							    </div> \
 							 </div> \
 						</div> \
+					</div>--> \
+					<div class="ui secondary  menu" style="margin-top:25px"> \
+					  <div class="right menu"> \
+					    <a class="active ui item" @click="routeTo(\'newStoryTab\')"><i class="write icon"></i> 创建新故事线  </a> \
+					  </div> \
 					</div> \
-					<div class="ui raised link centered card" v-for="phase in phases"> \
+					<div class="ui raised link centered card" v-for="(phase, index) in phases"> \
 						  <div class="content" @click="loadStoryLine(phase.id, phase.branchPhases, phase.isStart, phase)"> \
 							<span class="right floated"><font color="grey" size="2px">{{phase.isStart ? "" : phase.author + " · " }}{{formatDate(phase.createdDate)}}</font></span> \
 						    <div class="header" v-if="phase.isStart">{{phase.storyTitle}}<span><font color="grey" size="2px">    / {{phase.author}}</font></span></div> \
@@ -20,8 +25,7 @@ var storyListTab = Vue.component('story-list', {
 						    </div> \
 						  </div> \
 						  <div class="extra content"> \
-						    <span class="left floated like"><i class="like icon"></i> Like </span> \
-						    <span class="right floated star"><i class="write icon"></i> Follow </span> \
+						    <span class="right floated like"><i :id="index" class="empty heart icon" @click="toggleLikesIcon(phase.id, index)"></i>{{phase.like==0 ? "" : phase.like}} Likes </span> \
 						  </div> \
 					</div> \
 					<div id="extendNew" class="ui basic modal"> \
@@ -56,6 +60,27 @@ var storyListTab = Vue.component('story-list', {
 	},
 	
 	methods: {
+		
+		toggleLikesIcon: function(phaseId, index) {
+			debugger;
+			var like = true;
+			var attr = $('#'+index).attr('class');
+			if (attr == 'empty heart icon') {
+				// like
+				$('#'+index).attr('class','heart icon');
+				this.phases[index].like ++;
+			} else {
+				// dislike
+				$('#'+index).attr('class','empty heart icon');
+				like = false;
+				if (this.phases[index].like != 0) {
+					this.phases[index].like -- ;
+				}
+				
+			}
+			var url = "/story/phase/" + phaseId + "/" + like;
+			axios.put(url);
+		},
 		
 		formatDate: function(value) {
 			var date = new Date();
