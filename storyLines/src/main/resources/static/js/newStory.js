@@ -113,11 +113,17 @@ var newStoryTab = Vue.component('new-story',{
 					$('#alert-content').css('display','none');
 				}
 				$('#create')
-				  .modal('show')
+					.modal({
+					    blurring: true
+					})
+					.modal('show')
 				;
 			} else {
 				$('#cancel')
-				  .modal('show')
+					.modal({
+					    blurring: true
+					})
+					.modal('show')
 				;
 			}
 			

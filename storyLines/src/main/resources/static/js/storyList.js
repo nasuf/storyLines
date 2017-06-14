@@ -101,8 +101,10 @@ var storyListTab = Vue.component('story-list', {
 			} else {
 				this.selectedPhase = topPhase;
 				$('#extendNew')
-				  .modal('show')
-				;
+					.modal({
+					    blurring: true
+					})
+					.modal('show');
 			}
 		},
 		
