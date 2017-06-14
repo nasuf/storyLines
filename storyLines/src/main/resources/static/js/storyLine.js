@@ -111,9 +111,6 @@ var storyLineTab = Vue.component('story-line', {
 			} else {
 				this.selectedPhase = phase;
 				$('#createNew')
-					.modal({
-					    blurring: true
-					})
 					.modal('show');
 			}
 		},
@@ -153,9 +150,6 @@ var storyLineTab = Vue.component('story-line', {
 		routeToNewPhaseTab() {
 			this.toggleSideBar();
 			$('#createNew')
-				.modal({
-					    blurring: true
-				})
 				.modal('show');
 		},
 		
