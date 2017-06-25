@@ -3,7 +3,7 @@ var newPhaseTab = Vue.component('new-phase',{
 					<form class="ui form">	\
 						  <div class="ui piled segment" style="margin-top:5px; margin-bottom:15px"> \
 							<label><b><font size="5px">前文</font></b></label> \
-							<pre style="overFlow-x: hidden; overFlow-y: scroll; white-space: pre-wrap;word-wrap: break-word;" :style="{height: height}">{{ parentContent }}</pre> \
+							<pre style="overFlow-x: hidden; overFlow-y: scroll; white-space: pre-wrap;word-wrap: break-word;" :style="{maxHeight: height}">{{ parentContent }}</pre> \
 						  </div> \
 						  <div class="field"> \
 						    <label><b><font size="5px">正文</font></b></label> \

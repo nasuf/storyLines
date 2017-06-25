@@ -100,6 +100,9 @@ var storyListTab = Vue.component('story-list', {
 			//router.push(tabName)
 			debugger;
 			this.$store.commit('updateParentPhase', parentPhase);
+			var arr = new Array();
+			arr.push(parentPhase);
+			this.$store.commit('updateParentPhases', arr);
 			this.$parent.routeTo(tabName)
 		}
 	},
