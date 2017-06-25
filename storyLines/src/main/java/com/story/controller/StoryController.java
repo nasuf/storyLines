@@ -42,6 +42,8 @@ public class StoryController {
 	private PhaseRepository phaseRepository;
 	@Autowired
 	private StoryRepository storyRepository;
+	@Autowired
+	private PhaseComparator phaseComparator;
 	
 	ArrayList<Phase> phases = new ArrayList<Phase>();
 
@@ -279,14 +281,16 @@ public class StoryController {
 	}
 	
 	/**
-	 * find story list ( the level 1 phase list )
+	 * find story list ( the phases without parentPhaseId )
 	 * @return
 	 */
 	@RequestMapping(value = "/story", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findStoryList() {
-		List<Phase> topPhases = this.phaseRepository.findByParentPhaseId(null, new Sort(Sort.Direction.DESC, "createdDate"));
+		List<Phase> topPhases = this.phaseRepository.findByParentPhaseId(null);
+		this.phaseComparator.setField("lastUpdatedDate");
+		Collections.sort(topPhases, this.phaseComparator);
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
-				"Found " + topPhases.size() + " phases for level 1", 
+				"Found " + topPhases.size() + " phases without parentPhaseId", 
 				topPhases).build(), HttpStatus.OK);
 	}
 	
@@ -320,7 +324,8 @@ public class StoryController {
 				findChildPhases(childPhases.get(0).getParentPhaseId());
 			}
 		}
-		Collections.sort(phases, new PhaseComparator());
+		this.phaseComparator.setField("createdDate");
+		Collections.sort(phases, this.phaseComparator);
 		return phases;
 	}
 	

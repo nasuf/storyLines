@@ -52,7 +52,8 @@ var storyLineTab = Vue.component('story-line', {
 			branchPhases: [],
 			selectedPhaseIndex: '',
 			selectedPhase: '',
-			topPhase: ''
+			topPhase: '',
+			parentPhases: []
 		}
 	},
 	
@@ -105,10 +106,14 @@ var storyLineTab = Vue.component('story-line', {
 						_self.branchPhases = response.data.data;
 						_self.toggleSideBar();
 						_self.selectedPhaseIndex = index;
+						_self.parentPhases = _self.phases.splice(0, _self.selectedPhaseIndex + 1);
 					}
 				}) 
 				
 			} else {
+				var tmp = this.phases.concat();
+				this.parentPhases = tmp.splice(0, index + 1);
+				//this.parentPhases = this.phases.splice(0, index + 1);
 				this.selectedPhase = phase;
 				$('#createNew')
 					.modal('show');
@@ -132,11 +137,11 @@ var storyLineTab = Vue.component('story-line', {
 				if (response.data.status == 'success') {
 					debugger;
 					var subPhases = response.data.data;
-					var originPhases = _self.phases.splice(0, _self.selectedPhaseIndex + 1);
+					//var originPhases = _self.phases.splice(0, _self.selectedPhaseIndex + 1);
 					for (var i in subPhases) {
-						originPhases.push(subPhases[i]);
+						_self.parentPhases.push(subPhases[i]);
 					}
-					_self.phases = originPhases;
+					_self.phases = _self.parentPhases;
 					_self.toggleSideBar();
 				}
 			})
@@ -157,6 +162,7 @@ var storyLineTab = Vue.component('story-line', {
 			//router.push(tabName)
 			debugger;
 			this.$store.commit('updateParentPhase', this.selectedPhase);
+			this.$store.commit('updateParentPhases', this.parentPhases)
 			this.$parent.routeTo(tabName)
 		}
 		

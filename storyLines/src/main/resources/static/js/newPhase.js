@@ -1,15 +1,19 @@
 var newPhaseTab = Vue.component('new-phase',{
 	template: '<div class="ui container" style="margin-top:20px"> \
 					<form class="ui form">	\
-						 <div class="field"> \
+						  <div class="ui piled segment" style="margin-top:5px; margin-bottom:15px"> \
+							<label><b><font size="5px">前文</font></b></label> \
+							<pre style="overFlow-x: hidden; overFlow-y: scroll; white-space: pre-wrap;word-wrap: break-word;" :style="{height: height}">{{ parentContent }}</pre> \
+						  </div> \
+						  <div class="field"> \
+						    <label><b><font size="5px">正文</font></b></label> \
+						    <textarea v-model="phase.content"></textarea> \
+						  </div>\
+						  <div class="field"> \
 							<div class="field"> \
 						        <input type="text" name="author" v-model="phase.author" placeholder="请输入作者"> \
 						    </div> \
 						  </div> \
-						  <div class="field"> \
-						    <label>正文</label> \
-						    <textarea v-model="phase.content"></textarea> \
-						  </div>\
 						  <div class="ui submit button" @click="alertModal(\'create\')">创建</div> \
 						  <div class="ui submit button" @click="alertModal(\'cancel\')">取消</div><br/> \
 					</form><br> \
@@ -76,7 +80,10 @@ var newPhaseTab = Vue.component('new-phase',{
 				dislike: 0
 			},
 			isAuthorComplete: false,
-			isContentComplete: false
+			isContentComplete: false,
+			parentPhases: [],
+			parentContent: '',
+			height: window.screen.height*0.45 + 'px'
 		}
 	},
 	
@@ -130,6 +137,16 @@ var newPhaseTab = Vue.component('new-phase',{
 	beforeCreate: function() {
 		if (!this.$store.state.parentPhase) {
 			this.$parent.routeTo('/');
+		}
+	},
+	
+	created: function() {
+		debugger;
+		this.parentPhases = this.$store.state.parentPhases;
+		for (var i in this.parentPhases) {
+			if (this.parentPhases[i].content) {
+				this.parentContent += this.parentPhases[i].content + "\n\n";
+			}
 		}
 	}
 	

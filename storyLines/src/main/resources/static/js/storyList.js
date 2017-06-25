@@ -2,15 +2,6 @@ var storyListTab = Vue.component('story-list', {
 	
 	template: ' <div style="margin-top:20px; margin-bottom:20px" class="ui list"> \
 				<div class="ui container"> \
-					<!--<div class="ui top attached tabular menu transparent"> \
-						<div class="right menu"> \
-							 <div class="item"> \
-							    <div class="ui transparent icon input"> \
-									<span class="right floated star" @click="routeTo(\'newStoryTab\')"><i class="write icon"></i> 创建新故事线 </span> \
-							    </div> \
-							 </div> \
-						</div> \
-					</div>--> \
 					<div class="ui secondary  menu" style="margin-top:25px"> \
 					  <div class="right menu"> \
 					    <a class="active ui item" @click="routeTo(\'newStoryTab\')"><i class="write icon"></i> 创建新故事线  </a> \

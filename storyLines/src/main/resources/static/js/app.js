@@ -32,7 +32,8 @@ var router = new VueRouter({
 var store = new Vuex.Store({
 	state: {
 		parentPhase: '',
-		topPhase: ''
+		topPhase: '',
+		parentPhases: []
 	},
 	mutations: {
 		updateParentPhase (state, parentPhase) {
@@ -40,6 +41,9 @@ var store = new Vuex.Store({
 		},
 		updateTopPhase (state, topPhase) {
 			state.topPhase = topPhase;
+		},
+		updateParentPhases (state, parentPhases) {
+			state.parentPhases = parentPhases;
 		}
 	}
 });
@@ -63,5 +67,10 @@ var app = new Vue({
 		routeBack: function(){
 			router.back();
 		}
+	},
+	
+	created: function() {
+		$('.ui.container')
+		  .transition('scale');
 	}
 })
