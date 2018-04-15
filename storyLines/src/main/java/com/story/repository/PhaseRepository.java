@@ -1,8 +1,10 @@
 package com.story.repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
-import org.springframework.data.domain.Sort;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.mongodb.repository.MongoRepository;
 import org.springframework.data.mongodb.repository.Query;
 
@@ -20,9 +22,12 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	List<Phase> findByLevel(Integer level);
 	
 	@Query("{'parentPhaseId':{'$eq':?0}}")
-	List<Phase> findByParentPhaseId(String parentPhaseId, Sort sort);
+	Page<Phase> findByParentPhaseId(String parentPhaseId, Pageable page);
 	
 	@Query("{'parentPhaseId':{'$eq':?0}}")
 	List<Phase> findByParentPhaseId(String parentPhaseId);
+	
+	@Query("{'_id':{'$in':?0}}")
+	Page<Phase> findByIdIn(List<String> branchPhases, Pageable page);
 
 }

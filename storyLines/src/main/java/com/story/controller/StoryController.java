@@ -8,16 +8,20 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Stack;
 import java.util.TreeSet;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.StringUtils;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -30,7 +34,9 @@ import com.story.repository.PhaseRepository;
 import com.story.repository.StoryRepository;
 import com.story.utils.Constant;
 import com.story.utils.HttpResult;
+import com.story.utils.MongoUtils;
 import com.story.utils.PhaseComparator;
+
 
 @RequestMapping("/story")
 @Controller
@@ -232,7 +238,7 @@ public class StoryController {
 	 * @param storyId
 	 * @return
 	 */
-	@RequestMapping(value = "/phase/{phaseLevel}", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/phase/{phaseLevel}", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findPhases(@PathVariable("phaseLevel") Integer phaseLevel, 
 			@RequestParam("storyId") String storyId) {
 		if (StringUtils.isEmpty(phaseLevel)) {
@@ -250,7 +256,7 @@ public class StoryController {
 		data.put(Constant.RESULT_DATA, foundPhases);
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
 				"Found " + foundPhases.size() + " phases for story id: [" + storyId + "] and phase level: [" + phaseLevel + "]", data).build(), HttpStatus.OK);
-	}
+	}*/
 	
 	/**
 	 * find by story id and parent phase id.
@@ -285,10 +291,14 @@ public class StoryController {
 	 * @return
 	 */
 	@RequestMapping(value = "/story", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> findStoryList() {
-		List<Phase> topPhases = this.phaseRepository.findByParentPhaseId(null);
-		this.phaseComparator.setField("lastUpdatedDate");
-		Collections.sort(topPhases, this.phaseComparator);
+	public ResponseEntity<Map<String, Object>> findStoryList(
+			@RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
+			@RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(value = "sort", required = false) String sort) {
+		Page<Phase> phasePage = this.phaseRepository.findByParentPhaseId(null, new PageRequest(pageNumber, pageSize, MongoUtils.buildSort(sort)));
+		List<Phase> topPhases = phasePage.getContent();
+		/*this.phaseComparator.setField("lastUpdatedDate");
+		Collections.sort(topPhases, this.phaseComparator);*/
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
 				"Found " + topPhases.size() + " phases without parentPhaseId", 
 				topPhases).build(), HttpStatus.OK);
@@ -300,36 +310,44 @@ public class StoryController {
 	 * @return
 	 */
 	@RequestMapping(value = "/story/phases/{parentPhaseId}", method = RequestMethod.GET)
-	public ResponseEntity<Map<String, Object>> findStoryLineByPhaseId(@PathVariable("parentPhaseId") String parentPhaseId) {
-		if (StringUtils.isEmpty(parentPhaseId)) {
+	public ResponseEntity<Map<String, Object>> findStoryLineByPhaseId(@PathVariable("parentPhaseId") String parentPhaseId, 
+			@RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
+			@RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(value = "childPhasesPageSize", required = false, defaultValue = "15") int childPhasePageSize,
+			@RequestParam(value = "sort", required = false) String sort,
+			@RequestParam(value = "init") Boolean init) {
+		if (StringUtils.isEmpty(parentPhaseId)) { 
 			return new ResponseEntity<Map<String, Object>>(
 					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Head phase id can't be null").build(),
 					HttpStatus.BAD_REQUEST);
 		}
-		phases.clear();
-		Phase foundParentPhase = this.phaseRepository.findOne(parentPhaseId);
-		phases.add(foundParentPhase);
-		ArrayList<Phase> ChildPhase = this.findChildPhases(parentPhaseId);
-		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
-				"Found " + ChildPhase.size() + " phases for parentPhaseId [" + parentPhaseId + "]", 
-				ChildPhase).build(), HttpStatus.OK);
-	}
-	
-	public ArrayList<Phase> findChildPhases(String parentPhaseId){
-		List<Phase> foundPhases = this.phaseRepository.findByParentPhaseId(parentPhaseId, new Sort(Sort.Direction.DESC, "like"));
-		if(!foundPhases.isEmpty()) {
-			this.phases.add(foundPhases.get(0));
-			List<Phase> childPhases = this.phaseRepository.findByParentPhaseId(foundPhases.get(0).getId(), new Sort(Sort.Direction.DESC, "like"));
-			if (!childPhases.isEmpty()) {
-				findChildPhases(childPhases.get(0).getParentPhaseId());
+		//phases.clear();
+		Stack<Phase> stack = new Stack<Phase>();
+		Phase parentPhase = this.phaseRepository.findOne(parentPhaseId);
+		if (init) 
+			stack.push(parentPhase);
+		
+		//phases.add(foundParentPhase);
+		while(null != parentPhase.getBranchPhases() && parentPhase.getBranchPhases().size() > 0) {
+			Page<Phase> branchPhasePage = this.phaseRepository.findByParentPhaseId(parentPhase.getId(), new PageRequest(pageNumber, pageSize, MongoUtils.buildSort(sort)));
+			List<Phase> branchPhases = branchPhasePage.getContent();
+			if (!branchPhases.isEmpty() && branchPhases.size() > 0) {
+				Phase childPhase = branchPhases.get(0);
+				stack.push(childPhase);
+				parentPhase = childPhase;
+				if (stack.size() >= childPhasePageSize) 
+					break;
+			} else {
+				break;
 			}
 		}
-		this.phaseComparator.setField("createdDate");
-		Collections.sort(phases, this.phaseComparator);
-		return phases;
+		
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+				"Found " + stack.size() + " phases for parentPhaseId [" + parentPhaseId + "]", 
+				stack).build(), HttpStatus.OK);
 	}
 	
-	@RequestMapping(value = "/phases", method = RequestMethod.GET)
+	/*@RequestMapping(value = "/phases", method = RequestMethod.GET)
 	public ResponseEntity<Map<String, Object>> findPhaseById(@RequestParam("phaseIds") String phaseIds) {
 		if (StringUtils.isEmpty(phaseIds)) {
 			return new ResponseEntity<Map<String, Object>>(
@@ -347,6 +365,45 @@ public class StoryController {
 		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
 				"Found " + phases.size() + " phases.", 
 				phases).build(), HttpStatus.OK);
+	}*/
+	
+	@RequestMapping(value = "/phase/{phaseId}", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> findPhaseById(@PathVariable("phaseId") String phaseId) {
+		if (StringUtils.isEmpty(phaseId)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Phase id can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		Phase foundPhase = this.phaseRepository.findOne(phaseId);
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+				"Found " + phases.size() + " phases.", 
+				foundPhase).build(), HttpStatus.OK);
+	}
+	
+	@RequestMapping(value = "/branchPhases", method = RequestMethod.GET)
+	public ResponseEntity<Map<String, Object>> findBranchPhases(@RequestParam("parentPhaseId") String parentPhaseId,
+			@RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
+			@RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+			@RequestParam(value = "sort", required = false) String sort) {
+		if (StringUtils.isEmpty(parentPhaseId)) {
+			return new ResponseEntity<Map<String, Object>>(
+					new HttpResult(Constant.RESULT_STATUS_FAILURE, "Parent PhaseId id can't be null").build(),
+					HttpStatus.BAD_REQUEST);
+		}
+		Phase foundParentPhase = this.phaseRepository.findOne(parentPhaseId);
+		if (null != foundParentPhase) {
+			ArrayList<String> branchPhaseIds = foundParentPhase.getBranchPhases();
+			if (null != branchPhaseIds && !branchPhaseIds.isEmpty()) {
+				Page<Phase> branchPhasesPage = this.phaseRepository.findByIdIn(branchPhaseIds, new PageRequest(pageNumber, pageSize, MongoUtils.buildSort(sort)));
+				List<Phase> branchPhases = branchPhasesPage.getContent();
+				return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_SUCCESS,
+						"Found " + branchPhases.size() + " branch phases.", 
+						branchPhases).build(), HttpStatus.OK);
+			}
+		}
+		return new ResponseEntity<Map<String, Object>>(new HttpResult(Constant.RESULT_STATUS_FAILURE,
+				"Error").build(), HttpStatus.OK);
+		
 	}
 	
 	

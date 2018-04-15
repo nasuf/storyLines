@@ -47,6 +47,10 @@ public class Phase implements Serializable, Comparable{
 	@Field
 	private Boolean isPrivate;
 	@Field
+	private Boolean isDeleted;
+	@Field
+	private Long lastUpdatedDate;
+	@Field
 	private ArrayList<String> branchPhases;
 	
 	public String getId() {
@@ -140,6 +144,18 @@ public class Phase implements Serializable, Comparable{
 	public void setBranchPhases(ArrayList<String> branchPhases) {
 		this.branchPhases = branchPhases;
 	}
+	public Boolean getIsDeleted() {
+		return isDeleted;
+	}
+	public void setIsDeleted(Boolean isDeleted) {
+		this.isDeleted = isDeleted;
+	}
+	public Long getLastUpdatedDate() {
+		return lastUpdatedDate;
+	}
+	public void setLastUpdatedDate(Long lastUpdatedDate) {
+		this.lastUpdatedDate = lastUpdatedDate;
+	}
 	@Override
 	public int hashCode() {
 
@@ -163,8 +179,8 @@ public class Phase implements Serializable, Comparable{
 		return "Phase [id=" + id + ", storyId=" + storyId + ", storyTitle=" + storyTitle + ", parentPhaseId="
 				+ parentPhaseId + ", content=" + content + ", isStart=" + isStart + ", isEnd=" + isEnd + ", level="
 				+ level + ", like=" + like + ", dislike=" + dislike + ", comments=" + comments + ", createdDate="
-				+ createdDate + ", author=" + author + ", isPrivate=" + isPrivate + ", branchPhases=" + branchPhases
-				+ "]";
+				+ createdDate + ", author=" + author + ", isPrivate=" + isPrivate + ", isDeleted=" + isDeleted
+				+ ", lastUpdatedDate=" + lastUpdatedDate + ", branchPhases=" + branchPhases + "]";
 	}
 	@Override
 	public int compareTo(Object o) {

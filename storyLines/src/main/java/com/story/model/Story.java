@@ -34,6 +34,10 @@ public class Story implements Serializable{
 	private String title;
 	@Field
 	private Boolean isPrivate;
+	@Field
+	private Boolean needAuth;
+	@Field
+	private String type;
 	
 	public String getId() {
 		return id;
@@ -83,11 +87,23 @@ public class Story implements Serializable{
 	public void setIsPrivate(Boolean isPrivate) {
 		this.isPrivate = isPrivate;
 	}
+	public Boolean getNeedAuth() {
+		return needAuth;
+	}
+	public void setNeedAuth(Boolean needAuth) {
+		this.needAuth = needAuth;
+	}
+	public String getType() {
+		return type;
+	}
+	public void setType(String type) {
+		this.type = type;
+	}
 	@Override
 	public String toString() {
 		return "Story [id=" + id + ", depth=" + depth + ", phaseCount=" + phaseCount + ", phaseIdList=" + phaseIdList
 				+ ", createdDate=" + createdDate + ", lastUpdatedDate=" + lastUpdatedDate + ", title=" + title
-				+ ", isPrivate=" + isPrivate + "]";
+				+ ", isPrivate=" + isPrivate + ", needAuth=" + needAuth + ", type=" + type + "]";
 	}
 
 }

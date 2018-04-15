@@ -6,7 +6,7 @@
 	<groupId>com.story</groupId>
 	<artifactId>storyLines</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<packaging>jar</packaging>
+	<packaging>war</packaging>
 
 	<name>storyLines</name>
 	<description>story-lines</description>
