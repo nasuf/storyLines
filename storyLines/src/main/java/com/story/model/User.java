@@ -12,43 +12,35 @@ import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
 public class User {
-
 	@Id
 	@NotNull(message = "Id can't be null.")
 	private String id;
-	
 	@Field
 	private String nickName;
-	
 	@Field
 	private String openid;
-	
 	@Field
 	private Integer gender;
-	
 	@Field
 	private String avatarUrl;
-	
 	@Field
 	private String language;
-	
 	@Field
 	private String city;
-	
 	@Field
 	private String province;
-	
 	@Field
 	private String role;
-	
 	@Field
 	private String adminPwd;
-	
 	@Field
 	private String wechatId;
-	
 	@Field
 	private Long registerDate;
+	@Field
+	private Set<String> stories;
+	@Field
+	private Map<String, Set<String>> phases;
 
 	public String getId() {
 		return id;
@@ -144,6 +136,30 @@ public class User {
 
 	public void setRegisterDate(Long registerDate) {
 		this.registerDate = registerDate;
+	}
+
+	public Set<String> getStories() {
+		return stories;
+	}
+
+	public void setStories(Set<String> stories) {
+		this.stories = stories;
+	}
+
+	public Map<String, Set<String>> getPhases() {
+		return phases;
+	}
+
+	public void setPhases(Map<String, Set<String>> phases) {
+		this.phases = phases;
+	}
+
+	@Override
+	public String toString() {
+		return "User [id=" + id + ", nickName=" + nickName + ", openid=" + openid + ", gender=" + gender
+				+ ", avatarUrl=" + avatarUrl + ", language=" + language + ", city=" + city + ", province=" + province
+				+ ", role=" + role + ", adminPwd=" + adminPwd + ", wechatId=" + wechatId + ", registerDate="
+				+ registerDate + ", stories=" + stories + ", phases=" + phases + "]";
 	}
 
 

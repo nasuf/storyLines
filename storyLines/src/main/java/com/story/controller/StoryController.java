@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.TreeSet;
 
@@ -32,6 +33,7 @@ import com.story.model.Phase;
 import com.story.model.Story;
 import com.story.repository.PhaseRepository;
 import com.story.repository.StoryRepository;
+import com.story.repository.UserRepository;
 import com.story.utils.Constant;
 import com.story.utils.HttpResult;
 import com.story.utils.MongoUtils;
@@ -50,6 +52,8 @@ public class StoryController {
 	private StoryRepository storyRepository;
 	@Autowired
 	private PhaseComparator phaseComparator;
+	@Autowired
+	private UserRepository userRepository;
 	
 	ArrayList<Phase> phases = new ArrayList<Phase>();
 
@@ -66,14 +70,24 @@ public class StoryController {
 	public ResponseEntity<Map<String, Object>> addPhase(@RequestBody Phase phaseObject, 
 			@RequestParam("isNewStory") Boolean isNewStory,
 			@RequestParam(value = "storyId", required = false) String storyId,
-			@RequestParam(value = "parentPhaseId", required = false) String parentPhaseId) {
+			@RequestParam(value = "parentPhaseId", required = false) String parentPhaseId,
+			@RequestParam(value = "needAuth", required = false) Boolean needAuth,
+			@RequestParam(value = "isPublic", required = false) Boolean isPublic,
+			@RequestParam(value = "openid", required = true) String openid) {
 		if (isNewStory.equals(true)) {
 			Story story = new Story();
 			story.setTitle(phaseObject.getStoryTitle());
 			story.setDepth(Constant.ONE);
 			story.setPhaseCount(Constant.ONE);
 			story.setCreatedDate(new Date().getTime());
-			story.setLastUpdatedDate(new Date().getTime());
+//			story.setLastUpdatedDate(new Date().getTime());
+			story.setNeedAuth(needAuth);
+			story.setIsPublic(isPublic);
+			Set<String> authorSet = story.getAuthorSet();
+			if (null == authorSet) {
+				authorSet = new HashSet<String>();
+			}
+			authorSet.add(openid);
 			Story savedStory = this.storyRepository.save(story);
 			if (null == savedStory) {
 				return new ResponseEntity<Map<String, Object>>(
@@ -89,6 +103,7 @@ public class StoryController {
 			phaseObject.setCreatedDate(new Date().getTime());
 			phaseObject.setIsStart(true);
 			phaseObject.setIsEnd(true);
+			phaseObject.setAuthor(openid);
 			Phase savedPhase = this.phaseRepository.save(phaseObject);
 			if (null == savedPhase) {
 				return new ResponseEntity<Map<String, Object>>(

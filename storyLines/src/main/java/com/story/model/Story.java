@@ -2,6 +2,7 @@ package com.story.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -33,11 +34,13 @@ public class Story implements Serializable{
 	@Field
 	private String title;
 	@Field
-	private Boolean isPrivate;
+	private Boolean isPublic;
 	@Field
 	private Boolean needAuth;
 	@Field
 	private String type;
+	@Field
+	private Set<String> authorSet;
 	
 	public String getId() {
 		return id;
@@ -81,11 +84,11 @@ public class Story implements Serializable{
 	public void setTitle(String title) {
 		this.title = title;
 	}
-	public Boolean getIsPrivate() {
-		return isPrivate;
+	public Boolean getIsPublic() {
+		return isPublic;
 	}
-	public void setIsPrivate(Boolean isPrivate) {
-		this.isPrivate = isPrivate;
+	public void setIsPublic(Boolean isPublic) {
+		this.isPublic = isPublic;
 	}
 	public Boolean getNeedAuth() {
 		return needAuth;
@@ -99,11 +102,18 @@ public class Story implements Serializable{
 	public void setType(String type) {
 		this.type = type;
 	}
+	public Set<String> getAuthorSet() {
+		return authorSet;
+	}
+	public void setAuthorSet(Set<String> authorSet) {
+		this.authorSet = authorSet;
+	}
 	@Override
 	public String toString() {
 		return "Story [id=" + id + ", depth=" + depth + ", phaseCount=" + phaseCount + ", phaseIdList=" + phaseIdList
 				+ ", createdDate=" + createdDate + ", lastUpdatedDate=" + lastUpdatedDate + ", title=" + title
-				+ ", isPrivate=" + isPrivate + ", needAuth=" + needAuth + ", type=" + type + "]";
+				+ ", isPublic=" + isPublic + ", needAuth=" + needAuth + ", type=" + type + ", authorSet=" + authorSet
+				+ "]";
 	}
 
 }

@@ -1,7 +1,7 @@
 spring:
   data:
     mongodb:
-      host: 120.25.224.11
+      host: 119.23.253.108
       port: 28888
       database: storyLines
   mvc:
