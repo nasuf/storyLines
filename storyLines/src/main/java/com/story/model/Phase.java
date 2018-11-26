@@ -11,7 +11,7 @@ import org.springframework.data.mongodb.core.mapping.Document;
 import org.springframework.data.mongodb.core.mapping.Field;
 
 @Document
-public class Phase implements Serializable, Comparable{
+public class Phase implements Serializable, Comparable {
 
 	/**
 	 * 
@@ -45,6 +45,8 @@ public class Phase implements Serializable, Comparable{
 	@Field
 	private String author;
 	@Field
+	private String authorOpenid;
+	@Field
 	private Boolean isPrivate;
 	@Field
 	private Boolean isDeleted;
@@ -52,110 +54,151 @@ public class Phase implements Serializable, Comparable{
 	private Long lastUpdatedDate;
 	@Field
 	private ArrayList<String> branchPhases;
-	
+
 	public String getId() {
 		return id;
 	}
+
 	public void setId(String id) {
 		this.id = id;
 	}
+
 	public String getStoryId() {
 		return storyId;
 	}
+
 	public void setStoryId(String storyId) {
 		this.storyId = storyId;
 	}
+
 	public String getContent() {
 		return content;
 	}
+
 	public void setContent(String content) {
 		this.content = content;
 	}
+
 	public Boolean getIsStart() {
 		return isStart;
 	}
+
 	public void setIsStart(Boolean isStart) {
 		this.isStart = isStart;
 	}
+
 	public Boolean getIsEnd() {
 		return isEnd;
 	}
+
 	public void setIsEnd(Boolean isEnd) {
 		this.isEnd = isEnd;
 	}
+
 	public Integer getLevel() {
 		return level;
 	}
+
 	public void setLevel(Integer level) {
 		this.level = level;
 	}
+
 	public Integer getLike() {
 		return like;
 	}
+
 	public void setLike(Integer like) {
 		this.like = like;
 	}
+
 	public Integer getDislike() {
 		return dislike;
 	}
+
 	public void setDislike(Integer dislike) {
 		this.dislike = dislike;
 	}
+
 	public String getParentPhaseId() {
 		return parentPhaseId;
 	}
+
 	public void setParentPhaseId(String parentPhaseId) {
 		this.parentPhaseId = parentPhaseId;
 	}
-	
+
 	public Long getCreatedDate() {
 		return createdDate;
 	}
+
 	public void setCreatedDate(Long createdDate) {
 		this.createdDate = createdDate;
 	}
+
 	public String getAuthor() {
 		return author;
 	}
+
 	public void setAuthor(String author) {
 		this.author = author;
 	}
+
 	public Boolean getIsPrivate() {
 		return isPrivate;
 	}
+
 	public void setIsPrivate(Boolean isPrivate) {
 		this.isPrivate = isPrivate;
 	}
+
 	public ArrayList<String> getComments() {
 		return comments;
 	}
+
 	public void setComments(ArrayList<String> comments) {
 		this.comments = comments;
 	}
+
 	public String getStoryTitle() {
 		return storyTitle;
 	}
+
 	public void setStoryTitle(String storyTitle) {
 		this.storyTitle = storyTitle;
 	}
+
 	public ArrayList<String> getBranchPhases() {
 		return branchPhases;
 	}
+
 	public void setBranchPhases(ArrayList<String> branchPhases) {
 		this.branchPhases = branchPhases;
 	}
+
 	public Boolean getIsDeleted() {
 		return isDeleted;
 	}
+
 	public void setIsDeleted(Boolean isDeleted) {
 		this.isDeleted = isDeleted;
 	}
+
 	public Long getLastUpdatedDate() {
 		return lastUpdatedDate;
 	}
+
 	public void setLastUpdatedDate(Long lastUpdatedDate) {
 		this.lastUpdatedDate = lastUpdatedDate;
 	}
+
+	public String getAuthorOpenid() {
+		return authorOpenid;
+	}
+
+	public void setAuthorOpenid(String authorOpenid) {
+		this.authorOpenid = authorOpenid;
+	}
+
 	@Override
 	public int hashCode() {
 
@@ -173,7 +216,7 @@ public class Phase implements Serializable, Comparable{
 		Phase clazz = (Phase) obj;
 		return clazz.getId().equals(this.getId());
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Phase [id=" + id + ", storyId=" + storyId + ", storyTitle=" + storyTitle + ", parentPhaseId="
@@ -182,20 +225,21 @@ public class Phase implements Serializable, Comparable{
 				+ createdDate + ", author=" + author + ", isPrivate=" + isPrivate + ", isDeleted=" + isDeleted
 				+ ", lastUpdatedDate=" + lastUpdatedDate + ", branchPhases=" + branchPhases + "]";
 	}
+
 	@Override
 	public int compareTo(Object o) {
-		if (this ==o) {
-            return 0;            
-        } else if (o!=null && o instanceof Phase) {   
-            Phase phase = (Phase) o; 
-            if (like <= phase.like) {
-                return -1;
-            } else {
-	            return 1;
-	        }
-	    } else {
-	        return -1;
-	    }
+		if (this == o) {
+			return 0;
+		} else if (o != null && o instanceof Phase) {
+			Phase phase = (Phase) o;
+			if (like <= phase.like) {
+				return -1;
+			} else {
+				return 1;
+			}
+		} else {
+			return -1;
+		}
 	}
 
 }
