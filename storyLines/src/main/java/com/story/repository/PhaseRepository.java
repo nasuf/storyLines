@@ -34,7 +34,9 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	Page<Phase> findByParentPhaseIdNotNullAndOpenid(String parentPhaseId, String openid, Pageable page);
 	
 	@Query("{'parentPhaseId':{'$eq':?0}}")
-	List<Phase> findByParentPhaseId(String parentPhaseId);
+	Phase findByParentPhaseId(String parentPhaseId);
+
+	Phase findById(String phaseId);
 	
 	@Query("{'_id':{'$in':?0}}")
 	Page<Phase> findByIdIn(List<String> branchPhases, Pageable page);

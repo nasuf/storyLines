@@ -4,6 +4,8 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.story.model.Notification;
 import com.story.repository.NotificationRepository;
 import com.story.utils.Constant;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import javax.websocket.*;
@@ -17,6 +19,8 @@ import java.util.stream.Collectors;
 @ServerEndpoint(value = "/websocket/{openid}")
 @Component
 public class WebSocketHandler {
+
+	private static final Logger logger = LoggerFactory.getLogger(WebSocketHandler.class);
 	private static int onlineCount = 0;
 
 	private static CopyOnWriteArraySet<WebSocketHandler> webSocketSet = new CopyOnWriteArraySet<WebSocketHandler>();
@@ -37,7 +41,8 @@ public class WebSocketHandler {
 		if (list.size() == 0) {
 			webSocketSet.add(this);
 			addOnlineCount();
-			System.out.println("Socket Client Connected! Count: [" + getOnlineCount() + "]");
+//			System.out.println("Socket Client Connected! Count: [" + getOnlineCount() + "]");
+			logger.debug("New Socket Client Connected! Online Users: [ {} ]", getOnlineCount());
 		}
 
 		this.notifyWithDelay(openid);
@@ -47,7 +52,8 @@ public class WebSocketHandler {
 	public void onClose() {
 		webSocketSet.remove(this);
 		subOnlineCount();
-		System.out.println("Socket Closed! Count: " + getOnlineCount());
+//		System.out.println("Socket Closed! Count: " + getOnlineCount());
+		logger.debug("Socket Client Closed! Online Users: [ {} ]", getOnlineCount());
 	}
 
 	@OnMessage
