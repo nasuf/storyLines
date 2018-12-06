@@ -2,6 +2,8 @@ package com.story.model;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 
 import javax.validation.constraints.NotNull;
 
@@ -25,7 +27,11 @@ public class Phase implements Serializable, Comparable {
 	@Field
 	private String storyTitle;
 	@Field
+	private String storyAuthorOpenid;
+	@Field
 	private String parentPhaseId;
+	@Field
+	private String rootPhaseId;
 	@Field
 	private String content;
 	@Field
@@ -35,9 +41,7 @@ public class Phase implements Serializable, Comparable {
 	@Field
 	private Integer level;
 	@Field
-	private Integer like;
-	@Field
-	private Integer dislike;
+	private Integer likes;
 	@Field
 	private ArrayList<String> comments;
 	@Field
@@ -47,6 +51,8 @@ public class Phase implements Serializable, Comparable {
 	@Field
 	private String authorOpenid;
 	@Field
+	private String authorAvatarUrl;
+	@Field
 	private Boolean isPrivate;
 	@Field
 	private Boolean isDeleted;
@@ -54,6 +60,12 @@ public class Phase implements Serializable, Comparable {
 	private Long lastUpdatedDate;
 	@Field
 	private ArrayList<String> branchPhases;
+	@Field
+	private Set<String> tags;
+	@Field
+	private Integer reviewCount;
+	
+	private Set<String> likesUsers;
 
 	public String getId() {
 		return id;
@@ -103,20 +115,12 @@ public class Phase implements Serializable, Comparable {
 		this.level = level;
 	}
 
-	public Integer getLike() {
-		return like;
+	public Integer getLikes() {
+		return likes;
 	}
 
-	public void setLike(Integer like) {
-		this.like = like;
-	}
-
-	public Integer getDislike() {
-		return dislike;
-	}
-
-	public void setDislike(Integer dislike) {
-		this.dislike = dislike;
+	public void setLikes(Integer likes) {
+		this.likes = likes;
 	}
 
 	public String getParentPhaseId() {
@@ -199,6 +203,54 @@ public class Phase implements Serializable, Comparable {
 		this.authorOpenid = authorOpenid;
 	}
 
+	public String getAuthorAvatarUrl() {
+		return authorAvatarUrl;
+	}
+
+	public void setAuthorAvatarUrl(String authorAvatarUrl) {
+		this.authorAvatarUrl = authorAvatarUrl;
+	}
+
+	public Set<String> getLikesUsers() {
+		return likesUsers;
+	}
+
+	public void setLikesUsers(Set<String> likesUsers) {
+		this.likesUsers = likesUsers;
+	}
+
+	public Set<String> getTags() {
+		return tags;
+	}
+
+	public void setTags(Set<String> tags) {
+		this.tags = tags;
+	}
+
+	public String getRootPhaseId() {
+		return rootPhaseId;
+	}
+
+	public void setRootPhaseId(String rootPhaseId) {
+		this.rootPhaseId = rootPhaseId;
+	}
+
+	public Integer getReviewCount() {
+		return reviewCount;
+	}
+
+	public void setReviewCount(Integer reviewCount) {
+		this.reviewCount = reviewCount;
+	}
+
+	public String getStoryAuthorOpenid() {
+		return storyAuthorOpenid;
+	}
+
+	public void setStoryAuthorOpenid(String storyAuthorOpenid) {
+		this.storyAuthorOpenid = storyAuthorOpenid;
+	}
+
 	@Override
 	public int hashCode() {
 
@@ -220,10 +272,12 @@ public class Phase implements Serializable, Comparable {
 	@Override
 	public String toString() {
 		return "Phase [id=" + id + ", storyId=" + storyId + ", storyTitle=" + storyTitle + ", parentPhaseId="
-				+ parentPhaseId + ", content=" + content + ", isStart=" + isStart + ", isEnd=" + isEnd + ", level="
-				+ level + ", like=" + like + ", dislike=" + dislike + ", comments=" + comments + ", createdDate="
-				+ createdDate + ", author=" + author + ", isPrivate=" + isPrivate + ", isDeleted=" + isDeleted
-				+ ", lastUpdatedDate=" + lastUpdatedDate + ", branchPhases=" + branchPhases + "]";
+				+ parentPhaseId + ", rootPhaseId=" + rootPhaseId + ", content=" + content + ", isStart=" + isStart
+				+ ", isEnd=" + isEnd + ", level=" + level + ", likes=" + likes + ", comments=" + comments
+				+ ", createdDate=" + createdDate + ", author=" + author + ", authorOpenid=" + authorOpenid
+				+ ", authorAvatarUrl=" + authorAvatarUrl + ", isPrivate=" + isPrivate + ", isDeleted=" + isDeleted
+				+ ", lastUpdatedDate=" + lastUpdatedDate + ", branchPhases=" + branchPhases + ", tags=" + tags
+				+ ", reviewCount=" + reviewCount + ", likesUsers=" + likesUsers + "]";
 	}
 
 	@Override
@@ -232,7 +286,7 @@ public class Phase implements Serializable, Comparable {
 			return 0;
 		} else if (o != null && o instanceof Phase) {
 			Phase phase = (Phase) o;
-			if (like <= phase.like) {
+			if (likes <= phase.likes) {
 				return -1;
 			} else {
 				return 1;

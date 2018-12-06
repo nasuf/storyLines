@@ -21,8 +21,17 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	@Query("{'level':{'$eq':?0}}")
 	List<Phase> findByLevel(Integer level);
 	
-	@Query("{'parentPhaseId':{'$eq':?0}}")
+	@Query("{'parentPhaseId':{'$eq':?0}}")	
 	Page<Phase> findByParentPhaseId(String parentPhaseId, Pageable page);
+	
+	@Query("{$and:[{'parentPhaseId':{'$eq':?0}}, {'tags':{'$in':?1}}]}")	
+	Page<Phase> findByParentPhaseIdAndTags(String parentPhaseId, Object tags, Pageable page);
+	
+	@Query("{$and:[{'parentPhaseId':{'$eq':?0}}, {'authorOpenid':{'$eq':?1}}]}")
+	Page<Phase> findByParentPhaseIdAndOpenid(String parentPhaseId, String openid, Pageable page);
+	
+	@Query("{$and:[{'parentPhaseId':{'$ne':?0}}, {'authorOpenid':{'$eq':?1}}]}")
+	Page<Phase> findByParentPhaseIdNotNullAndOpenid(String parentPhaseId, String openid, Pageable page);
 	
 	@Query("{'parentPhaseId':{'$eq':?0}}")
 	List<Phase> findByParentPhaseId(String parentPhaseId);

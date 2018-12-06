@@ -34,5 +34,8 @@ public class Constant {
 	// User Role
 	public static final String USER_ROLE_ADMIN = "ADMIN";
 	public static final String USER_ROLE_USER = "USER";
+	
+	public static final String MESSAGE_TYPE_MULTIPLE = "MULTIPLE";
+	public static final String MESSAGE_TYPE_SINGLE = "SINGLE";
 
 }
