@@ -21,8 +21,12 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	@Query("{'level':{'$eq':?0}}")
 	List<Phase> findByLevel(Integer level);
 	
-	@Query("{'parentPhaseId':{'$eq':?0}}")	
+	@Query("{$or:[{$and: [{'parentPhaseId': {$eq: ?0}}, {'isStoryNeedApproval': {$eq: false}}]}, " +
+				 "{$and: [{'parentPhaseId': {$eq: ?0}}, {'isStoryNeedApproval': {$eq: true}}, {'approvalStatus': {$eq: 'APPROVED'}}]}]}")
 	Page<Phase> findByParentPhaseId(String parentPhaseId, Pageable page);
+
+	@Query("{'parentPhaseId':{'$eq':?0}}")
+	Page<Phase> findByParentPhaseIdIgnoreIsStoryNeedApproval(String parentPhaseId, Pageable page);
 	
 	@Query("{$and:[{'parentPhaseId':{'$eq':?0}}, {'tags':{'$in':?1}}]}")	
 	Page<Phase> findByParentPhaseIdAndTags(String parentPhaseId, Object tags, Pageable page);
@@ -39,6 +43,9 @@ public interface PhaseRepository extends MongoRepository<Phase, String>{
 	Phase findById(String phaseId);
 	
 	@Query("{'_id':{'$in':?0}}")
-	Page<Phase> findByIdIn(List<String> branchPhases, Pageable page);
+	List<Phase> findByIdIn(List<String> branchPhases);
+
+	@Query("{$and:[{'storyAuthorOpenid':{'$eq':?0}}, {'authorOpenid': {$ne: ?0}}, {'isStoryNeedApproval':{'$eq':?1}}, {'approvalStatus': {'$ne':'NO_NEED_APPROVAL'}}]}")
+	Page<Phase> findByStoryAuthorOpenidAndNeedApproval(String storyAuthorOpenid, Boolean isStoryNeedApproval, Pageable page);
 
 }

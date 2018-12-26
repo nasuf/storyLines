@@ -64,6 +64,14 @@ public class Phase implements Serializable, Comparable {
 	private Set<String> tags;
 	@Field
 	private Integer reviewCount;
+	@Field
+	private Boolean isStoryNeedApproval;
+	@Field
+	private String approvalStatus;
+	@Field
+	private Integer contentLengthMax;
+	@Field
+	private Integer contentLengthMin;
 	
 	private Set<String> likesUsers;
 
@@ -251,6 +259,38 @@ public class Phase implements Serializable, Comparable {
 		this.storyAuthorOpenid = storyAuthorOpenid;
 	}
 
+	public Boolean getIsStoryNeedApproval() {
+		return isStoryNeedApproval;
+	}
+
+	public void setIsStoryNeedApproval(Boolean isStoryNeedApproval) {
+		this.isStoryNeedApproval = isStoryNeedApproval;
+	}
+
+	public String getApprovalStatus() {
+		return approvalStatus;
+	}
+
+	public void setApprovalStatus(String approvalStatus) {
+		this.approvalStatus = approvalStatus;
+	}
+
+	public Integer getContentLengthMax() {
+		return contentLengthMax;
+	}
+
+	public void setContentLengthMax(Integer contentLengthMax) {
+		this.contentLengthMax = contentLengthMax;
+	}
+
+	public Integer getContentLengthMin() {
+		return contentLengthMin;
+	}
+
+	public void setContentLengthMin(Integer contentLengthMin) {
+		this.contentLengthMin = contentLengthMin;
+	}
+
 	@Override
 	public int hashCode() {
 
@@ -271,13 +311,35 @@ public class Phase implements Serializable, Comparable {
 
 	@Override
 	public String toString() {
-		return "Phase [id=" + id + ", storyId=" + storyId + ", storyTitle=" + storyTitle + ", parentPhaseId="
-				+ parentPhaseId + ", rootPhaseId=" + rootPhaseId + ", content=" + content + ", isStart=" + isStart
-				+ ", isEnd=" + isEnd + ", level=" + level + ", likes=" + likes + ", comments=" + comments
-				+ ", createdDate=" + createdDate + ", author=" + author + ", authorOpenid=" + authorOpenid
-				+ ", authorAvatarUrl=" + authorAvatarUrl + ", isPrivate=" + isPrivate + ", isDeleted=" + isDeleted
-				+ ", lastUpdatedDate=" + lastUpdatedDate + ", branchPhases=" + branchPhases + ", tags=" + tags
-				+ ", reviewCount=" + reviewCount + ", likesUsers=" + likesUsers + "]";
+		return "Phase{" +
+				"id='" + id + '\'' +
+				", storyId='" + storyId + '\'' +
+				", storyTitle='" + storyTitle + '\'' +
+				", storyAuthorOpenid='" + storyAuthorOpenid + '\'' +
+				", parentPhaseId='" + parentPhaseId + '\'' +
+				", rootPhaseId='" + rootPhaseId + '\'' +
+				", content='" + content + '\'' +
+				", isStart=" + isStart +
+				", isEnd=" + isEnd +
+				", level=" + level +
+				", likes=" + likes +
+				", comments=" + comments +
+				", createdDate=" + createdDate +
+				", author='" + author + '\'' +
+				", authorOpenid='" + authorOpenid + '\'' +
+				", authorAvatarUrl='" + authorAvatarUrl + '\'' +
+				", isPrivate=" + isPrivate +
+				", isDeleted=" + isDeleted +
+				", lastUpdatedDate=" + lastUpdatedDate +
+				", branchPhases=" + branchPhases +
+				", tags=" + tags +
+				", reviewCount=" + reviewCount +
+				", isStoryNeedApproval=" + isStoryNeedApproval +
+				", approvalStatus='" + approvalStatus + '\'' +
+				", contentLengthMax=" + contentLengthMax +
+				", contentLengthMin=" + contentLengthMin +
+				", likesUsers=" + likesUsers +
+				'}';
 	}
 
 	@Override

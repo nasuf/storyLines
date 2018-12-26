@@ -48,7 +48,6 @@ public class StoryController {
      *
      * @param phaseObject
      * @param isNewStory
-     * @param storyTitle
      * @param storyId
      * @param parentPhaseId
      * @return
@@ -61,7 +60,7 @@ public class StoryController {
                                                  @RequestParam(value = "storyId", required = false) String storyId,
                                                  @RequestParam(value = "parentPhaseId", required = false) String parentPhaseId,
                                                  @RequestParam(value = "rootPhaseId", required = false) String rootPhaseId,
-                                                 @RequestParam(value = "needAuth", required = false) Boolean needAuth,
+                                                 @RequestParam(value = "needApproval", required = false) Boolean needApproval,
                                                  @RequestParam(value = "isPublic", required = false) Boolean isPublic,
                                                  @RequestParam(value = "openid", required = true) String openid) {
         User requestor = this.userRepository.findByOpenid(openid);
@@ -73,8 +72,9 @@ public class StoryController {
             story.setPhaseCount(Constant.ONE);
             story.setCreatedDate(date);
             story.setLastUpdatedDate(date);
-            story.setNeedAuth(needAuth);
+            story.setNeedApproval(needApproval);
             story.setIsPublic(isPublic);
+            story.setCreatorOpenid(openid);
             Set<String> authorSet = story.getAuthorSet();
             if (null == authorSet) {
                 authorSet = new HashSet<String>();
@@ -96,9 +96,14 @@ public class StoryController {
             phaseObject.setLastUpdatedDate(date);
             phaseObject.setIsStart(true);
             phaseObject.setIsEnd(true);
+            phaseObject.setIsStoryNeedApproval(needApproval);
             phaseObject.setAuthor(requestor.getNickName());
             phaseObject.setAuthorAvatarUrl(requestor.getAvatarUrl());
             phaseObject.setAuthorOpenid(openid);
+            phaseObject.setStoryAuthorOpenid(savedStory.getCreatorOpenid());
+            // if the story need approval, then this first phase should be approved already by author himself,
+            // or this should be PENDING_APPROVAL by default
+            phaseObject.setApprovalStatus(needApproval ? Constant.APPROVAL_STATUS_APPROVED : Constant.APPROVAL_STATUS_NO_NEED_APPROVAL);
             Phase savedPhase = this.phaseRepository.save(phaseObject);
             if (null == savedPhase) {
                 return new ResponseEntity<Map<String, Object>>(
@@ -167,6 +172,7 @@ public class StoryController {
             phaseObject.setAuthor(requestor.getNickName());
             phaseObject.setAuthorAvatarUrl(requestor.getAvatarUrl());
             phaseObject.setAuthorOpenid(openid);
+            phaseObject.setIsStoryNeedApproval(needApproval);
             Phase foundParentPhase = this.phaseRepository.findOne(parentPhaseId);
             if (null == foundParentPhase) {
                 return new ResponseEntity<Map<String, Object>>(
@@ -196,6 +202,19 @@ public class StoryController {
                         HttpStatus.BAD_REQUEST);
             }
             phaseObject.setStoryTitle(foundStory.getTitle());
+            phaseObject.setStoryAuthorOpenid(foundStory.getCreatorOpenid());
+
+            // if the story author is himself, then the phase approved status should be APPROVED
+            if (needApproval) {
+                if (foundStory.getCreatorOpenid().equals(openid)) {
+                    phaseObject.setApprovalStatus(Constant.APPROVAL_STATUS_APPROVED);
+                } else {
+                    phaseObject.setApprovalStatus(Constant.APPROVAL_STATUS_PENDING_APPROVAL);
+                }
+            } else {
+                phaseObject.setApprovalStatus(Constant.APPROVAL_STATUS_NO_NEED_APPROVAL);
+            }
+//            phaseObject.setApprovalStatus((foundStory.getCreatorOpenid().equals(openid) && needApproval) ? Constant.APPROVAL_STATUS_APPROVED : Constant.APPROVAL_STATUS_REJECTED);
             Phase savedPhase = this.phaseRepository.save(phaseObject);
             if (null == savedPhase) {
                 return new ResponseEntity<Map<String, Object>>(
@@ -246,7 +265,7 @@ public class StoryController {
             // create notification
             // create notification message
             /*this.messageService.notify(Constant.MESSAGE_TYPE_SINGLE, requestor.getNickName(),
-					savedPhase.getStoryTitle(), savedPhase.getStoryId(), savedPhase.getParentPhaseId(),
+                    savedPhase.getStoryTitle(), savedPhase.getStoryId(), savedPhase.getParentPhaseId(),
 					rootPhase.getAuthorOpenid(), updatedParentPhase.getAuthorOpenid());*/
             // need 2 notifications, one for story author, one for parent phase author
 
@@ -377,7 +396,7 @@ public class StoryController {
             @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
             @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
             @RequestParam(value = "sort", required = false) String sort) {
-        Page<Phase> phasePage = this.phaseRepository.findByParentPhaseId(null,
+        Page<Phase> phasePage = this.phaseRepository.findByParentPhaseIdIgnoreIsStoryNeedApproval(null,
                 new PageRequest(pageNumber, pageSize, MongoUtils.buildSort(sort)));
         List<Phase> topPhases = phasePage.getContent();
 		/*
@@ -522,8 +541,8 @@ public class StoryController {
 
     @RequestMapping(value = "/branchPhases", method = RequestMethod.GET)
     public ResponseEntity<Map<String, Object>> findBranchPhases(@RequestParam("parentPhaseId") String parentPhaseId,
-                                                                @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
-                                                                @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+                                                                // @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
+                                                                // @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
                                                                 @RequestParam(value = "sort", required = false) String sort) {
         if (StringUtils.isEmpty(parentPhaseId)) {
             return new ResponseEntity<Map<String, Object>>(
@@ -534,9 +553,7 @@ public class StoryController {
         if (null != foundParentPhase) {
             ArrayList<String> branchPhaseIds = foundParentPhase.getBranchPhases();
             if (null != branchPhaseIds && !branchPhaseIds.isEmpty()) {
-                Page<Phase> branchPhasesPage = this.phaseRepository.findByIdIn(branchPhaseIds,
-                        new PageRequest(pageNumber, pageSize, MongoUtils.buildSort(sort)));
-                List<Phase> branchPhases = branchPhasesPage.getContent();
+                List<Phase> branchPhases = this.phaseRepository.findByIdIn(branchPhaseIds);
                 return new ResponseEntity<Map<String, Object>>(
                         new HttpResult(Constant.RESULT_STATUS_SUCCESS,
                                 "Found " + branchPhases.size() + " branch phases.", branchPhases).build(),
@@ -599,6 +616,34 @@ public class StoryController {
         return new ResponseEntity<Map<String, Object>>(
                 new HttpResult(Constant.RESULT_STATUS_SUCCESS, "Consume Notifications", null).build(),
                 HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/approvalList", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> findApprovalList(@RequestParam("storyAuthorOpenid") String storyAuthorOpenid,
+                                                                @RequestParam("isStoryNeedApproval") Boolean isStoryNeedApproval,
+                                                                @RequestParam(value = "pageSize", required = false, defaultValue = "15") int pageSize,
+                                                                @RequestParam(value = "pageNumber", required = false, defaultValue = "0") int pageNumber,
+                                                                @RequestParam(value = "sort", required = false) String sort) {
+        Page<Phase> foundPhases = this.phaseRepository.findByStoryAuthorOpenidAndNeedApproval(storyAuthorOpenid, isStoryNeedApproval,
+                new PageRequest(pageNumber, pageSize, MongoUtils.buildSort(sort)));
+        return new ResponseEntity<Map<String, Object>>(
+                new HttpResult(Constant.RESULT_STATUS_SUCCESS, "Consume Notifications", foundPhases.getContent()).build(),
+                HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/approve", method = RequestMethod.GET)
+    public ResponseEntity<Map<String, Object>> approvePhase(@RequestParam("phaseId") String phaseId, @RequestParam("approved") Boolean approved) {
+        Phase foundPhase = this.phaseRepository.findById(phaseId);
+        if (approved) {
+            foundPhase.setApprovalStatus(Constant.APPROVAL_STATUS_APPROVED);
+        } else {
+            foundPhase.setApprovalStatus(Constant.APPROVAL_STATUS_REJECTED);
+        }
+        Phase updatedPhase = this.phaseRepository.save(foundPhase);
+        return new ResponseEntity<Map<String, Object>>(
+                new HttpResult(Constant.RESULT_STATUS_SUCCESS, "Phase has been [" + (approved ? "Approved!" : "Rejected!"), updatedPhase).build(),
+                HttpStatus.OK);
+
     }
 
 }

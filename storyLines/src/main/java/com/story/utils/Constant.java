@@ -38,4 +38,9 @@ public class Constant {
 	public static final String MESSAGE_TYPE_MULTIPLE = "MULTIPLE";
 	public static final String MESSAGE_TYPE_SINGLE = "SINGLE";
 
+	public static final String APPROVAL_STATUS_PENDING_APPROVAL = "PENDING_APPROVAL";
+	public static final String APPROVAL_STATUS_APPROVED = "APPROVED";
+	public static final String APPROVAL_STATUS_REJECTED = "REJECTED";
+	public static final String APPROVAL_STATUS_NO_NEED_APPROVAL = "NO_NEED_APPROVAL";
+
 }
